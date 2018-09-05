@@ -1,6 +1,6 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\DependencyInjection;
+namespace AlterPHP\EasyAdminMongoOdmBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('easy_admin_odm');
+        $rootNode = $treeBuilder->root('easy_admin_mongo_odm');
 
         $this->addDocumentsSection($rootNode);
 

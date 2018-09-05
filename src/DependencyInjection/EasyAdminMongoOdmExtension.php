@@ -1,6 +1,6 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\DependencyInjection;
+namespace AlterPHP\EasyAdminMongoOdmBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * @see http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class EasyAdminOdmExtension extends Extension
+class EasyAdminMongoOdmExtension extends Extension
 {
     /**
      * {@inheritdoc}
@@ -21,13 +21,13 @@ class EasyAdminOdmExtension extends Extension
     {
         $configs = $this->processConfigFiles($configs);
 
-        // EasyAdminOdm configuration
+        // EasyAdminMongoOdm configuration
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        // EasyAdmin ODM configuration
-        $container->setParameter('easyadmin_odm.config', $config);
-        $container->setParameter('easyadmin_odm.cache.dir', $container->getParameter('kernel.cache_dir').'/easy_admin_odm');
+        // EasyAdmin Mongo ODM configuration
+        $container->setParameter('easyadmin_mongo_odm.config', $config);
+        $container->setParameter('easyadmin_mongo_odm.cache.dir', $container->getParameter('kernel.cache_dir').'/easy_admin_mongo_odm');
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
@@ -36,7 +36,7 @@ class EasyAdminOdmExtension extends Extension
             // // in 'dev', use the built-in Symfony exception listener
             // $container->removeDefinition('easyadmin.listener.exception');
             // avoid parsing the entire config in 'dev' (even for requests unrelated to the backend)
-            $container->removeDefinition('easyadmin_odm.cache.config_warmer');
+            $container->removeDefinition('easyadmin_mongo_odm.cache.config_warmer');
         }
     }
 

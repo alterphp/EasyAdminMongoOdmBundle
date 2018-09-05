@@ -4,23 +4,60 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="easyadmin_odm.cache.manager" class="AlterPHP\EasyAdminOdmBundle\Cache\CacheManager" public="true">
-            <argument>%easyadmin_odm.cache.dir%</argument>
+        <service id="easyadmin_mongo_odm.cache.manager" class="AlterPHP\EasyAdminMongoOdmBundle\Cache\CacheManager" public="true">
+            <argument>%easyadmin_mongo_odm.cache.dir%</argument>
         </service>
-        <service id="easyadmin_odm.cache.config_warmer" class="AlterPHP\EasyAdminOdmBundle\Cache\ConfigWarmer" public="false">
-            <argument type="service" id="easyadmin_odm.config.manager" />
+        <service id="easyadmin_mongo_odm.cache.config_warmer" class="AlterPHP\EasyAdminMongoOdmBundle\Cache\ConfigWarmer" public="false">
+            <argument type="service" id="easyadmin_mongo_odm.config.manager" />
             <tag name="kernel.cache_warmer" priority="-2048" />
         </service>
-        <service id="easyadmin_odm.config.manager" class="AlterPHP\EasyAdminOdmBundle\Configuration\ConfigManager" public="true">
-            <argument type="service" id="easyadmin_odm.cache.manager" />
+        <service id="easyadmin_mongo_odm.config.manager" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager" public="true">
+            <argument type="service" id="easyadmin_mongo_odm.cache.manager" />
             <argument type="service" id="property_accessor" />
-            <argument>%easyadmin_odm.config%</argument>
+            <argument>%easyadmin_mongo_odm.config%</argument>
             <argument>%kernel.debug%</argument>
         </service>
 
-        <service id="easyadmin_odm.data_collector" class="AlterPHP\EasyAdminOdmBundle\DataCollector\EasyAdminOdmDataCollector" public="false">
-            <argument type="service" id="easyadmin_odm.config.manager" />
-            <tag name="data_collector" template="@EasyAdminOdm/data_collector/easyadmin_odm.html.twig" id="easyadmin_odm" />
+        <!-- Datacollector -->
+        <service id="easyadmin_mongo_odm.data_collector" class="AlterPHP\EasyAdminMongoOdmBundle\DataCollector\EasyAdminMongoOdmDataCollector" public="false">
+            <argument type="service" id="easyadmin_mongo_odm.config.manager" />
+            <tag name="data_collector" template="@EasyAdminMongoOdm/data_collector/easyadmin_mongo_odm.html.twig" id="easyadmin_mongo_odm" />
         </service>
+
+        <!-- EventListener -->
+        <service id="easyadmin_mongo_odm.listener.request_post_initialize" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\RequestPostInitializeListener" public="true">
+            <argument type="service" id="doctrine_mongodb" />
+            <argument type="service" id="request_stack" on-invalid="null" />
+            <tag name="kernel.event_listener" event="easy_admin_mongo_odm.post_initialize" method="initializeRequest" />
+        </service>
+        <!--service id="easyadmin_mongo_odm.listener.controller" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\ControllerListener" public="true">
+            <argument type="service" id="easyadmin_mongo_odm.config.manager" />
+            <argument type="service" id="controller_resolver" />
+            <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" />
+        </service-->
+        <!--service id="easyadmin_mongo_odm.listener.exception" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\ExceptionListener" public="true">
+            <argument type="service" id="twig" />
+            <argument>%easyadmin_mongo_odm.config%</argument>
+            <argument type="string">easyadmin_mongo_odm.listener.exception:showExceptionPageAction</argument>
+            <argument type="service" id="logger" on-invalid="null" />
+            <tag name="monolog.logger" channel="request" />
+            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="-64" />
+        </service-->
+
+        <!-- ConfigPass -->
+        <service id="easyadmin_mongo_odm.configuration.normalizer_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\NormalizerConfigPass" public="false">
+            <argument id="service_container" type="service" />
+            <argument>%easyadmin.config%</argument>
+            <tag name="easyadmin_mongo_odm.config_pass" priority="90" />
+        </service>
+        <service id="easyadmin_mongo_odm.configuration.action_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ActionConfigPass" public="false">
+            <argument>%easyadmin.config%</argument>
+            <tag name="easyadmin_mongo_odm.config_pass" priority="60" />
+        </service>
+        <service id="easyadmin_mongo_odm.configuration.metadata_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\MetadataConfigPass" public="false">
+            <argument type="service" id="doctrine_mongodb" />
+            <tag name="easyadmin_mongo_odm.config_pass" priority="50" />
+        </service>
+
     </services>
 </container>

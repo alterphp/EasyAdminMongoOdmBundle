@@ -1,9 +1,10 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\Configuration;
+namespace AlterPHP\EasyAdminMongoOdmBundle\Configuration;
 
-use AlterPHP\EasyAdminOdmBundle\Cache\CacheManager;
-use AlterPHP\EasyAdminOdmBundle\Exception\UndefinedDocumentException;
+use AlterPHP\EasyAdminMongoOdmBundle\Cache\CacheManager;
+use AlterPHP\EasyAdminMongoOdmBundle\Exception\UndefinedDocumentException;
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class ConfigManager
@@ -17,7 +18,7 @@ class ConfigManager
     /** @var array */
     private $originalOdmBackendConfig;
     /** @var ConfigPassInterface[] */
-    private $odmConfigPasses;
+    private $odmConfigPasses = array();
     /** @var bool */
     private $debug;
 
@@ -44,13 +45,13 @@ class ConfigManager
 
     /**
      * Returns the entire backend configuration or just the configuration for
-     * the optional property path. Example: getOdmBackendConfig('design.menu').
+     * the optional property path. Example: getBackendConfig('design.menu').
      *
      * @param string|null $propertyPath
      *
      * @return array
      */
-    public function getOdmBackendConfig($propertyPath = null)
+    public function getBackendConfig($propertyPath = null)
     {
         if (null === $this->odmBackendConfig) {
             $this->odmBackendConfig = $this->processOdmConfig();
@@ -93,7 +94,7 @@ class ConfigManager
      */
     public function getDocumentConfig($documentName)
     {
-        $odmBackendConfig = $this->getOdmBackendConfig();
+        $odmBackendConfig = $this->getBackendConfig();
         if (!isset($odmBackendConfig['documents'][$documentName])) {
             throw new UndefinedDocumentException(array('document_name' => $documentName));
         }
@@ -110,7 +111,7 @@ class ConfigManager
      */
     public function getDocumentConfigByClass($fqcn)
     {
-        $odmBackendConfig = $this->getOdmBackendConfig();
+        $odmBackendConfig = $this->getBackendConfig();
         foreach ($odmBackendConfig['documents'] as $documentName => $documentConfig) {
             if ($documentConfig['class'] === $fqcn) {
                 return $documentConfig;

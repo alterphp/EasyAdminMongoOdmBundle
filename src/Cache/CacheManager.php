@@ -1,6 +1,6 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\Cache;
+namespace AlterPHP\EasyAdminMongoOdmBundle\Cache;
 
 use Doctrine\Common\Cache\FilesystemCache;
 

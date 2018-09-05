@@ -1,9 +1,9 @@
 {
-    "name": "alterphp/easyadmin-odm-bundle",
+    "name": "alterphp/easyadmin-mongo-odm-bundle",
     "type": "symfony-bundle",
-    "description": "This bundle provides support for Doctrine ODM documents in EasyAdmin",
+    "description": "This bundle provides support for Doctrine Mongo ODM documents in EasyAdmin",
     "keywords": ["admin", "easyadmin", "odm", "mongo", "document"],
-    "homepage": "https://github.com/alterphp/EasyAdminOdmBundle",
+    "homepage": "https://github.com/alterphp/EasyAdminMongoOdmBundle",
     "license": "MIT",
     "authors": [
         {
@@ -13,6 +13,7 @@
     ],
     "require": {
         "php": ">=7.0",
+        "alterphp/easyadmin-extension-bundle": "*",
         "easycorp/easyadmin-bundle": "^1.17"
     },
     "require-dev": {
@@ -36,13 +37,13 @@
         "sort-packages": true
     },
     "autoload": {
-        "psr-4": { "AlterPHP\\EasyAdminOdmBundle\\": "src/" },
+        "psr-4": { "AlterPHP\\EasyAdminMongoOdmBundle\\": "src/" },
         "exclude-from-classmap": ["/Tests/"]
     },
     "autoload-dev": {
         "psr-4": {
             "AppTestBundle\\": "tests/Fixtures/AppTestBundle/",
-            "AlterPHP\\EasyAdminOdmBundle\\Tests\\": "tests/"
+            "AlterPHP\\EasyAdminMongoOdmBundle\\Tests\\": "tests/"
         }
     },
     "extra": {

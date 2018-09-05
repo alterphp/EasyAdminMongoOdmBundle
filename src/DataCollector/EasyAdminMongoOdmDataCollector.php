@@ -1,8 +1,8 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\DataCollector;
+namespace AlterPHP\EasyAdminMongoOdmBundle\DataCollector;
 
-use AlterPHP\EasyAdminOdmBundle\Configuration\ConfigManager;
+use AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -10,7 +10,7 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\Yaml\Yaml;
 
-class EasyAdminOdmDataCollector extends DataCollector
+class EasyAdminMongoOdmDataCollector extends DataCollector
 {
     /** @var ConfigManager */
     private $configManager;
@@ -39,7 +39,7 @@ class EasyAdminOdmDataCollector extends DataCollector
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        if ('easyadmin_odm' !== $request->attributes->get('_route')) {
+        if ('easyadmin_mongo_odm' !== $request->attributes->get('_route')) {
             return;
         }
 
@@ -49,7 +49,7 @@ class EasyAdminOdmDataCollector extends DataCollector
 
         $this->data = array(
             'documents' => count($backendConfig['documents']),
-            'request_parameters' => $this->getEasyAdminOdmParameters($request),
+            'request_parameters' => $this->getEasyAdminMongoOdmParameters($request),
             'current_document_configuration' => $currentDocumentConfig,
             'backend_configuration' => $backendConfig,
         );
@@ -60,7 +60,7 @@ class EasyAdminOdmDataCollector extends DataCollector
      *
      * @return array|null
      */
-    private function getEasyAdminOdmParameters(Request $request)
+    private function getEasyAdminMongoOdmParameters(Request $request)
     {
         return array(
             'action' => $request->query->get('action'),
@@ -74,7 +74,7 @@ class EasyAdminOdmDataCollector extends DataCollector
     /**
      * @return bool
      */
-    public function isEasyAdminOdmAction()
+    public function isEasyAdminMongoOdmAction()
     {
         return isset($this->data['num_documents']) && 0 !== $this->data['num_documents'];
     }
@@ -142,6 +142,6 @@ class EasyAdminOdmDataCollector extends DataCollector
      */
     public function getName()
     {
-        return 'easyadmin_odm';
+        return 'easyadmin_mongo_odm';
     }
 }

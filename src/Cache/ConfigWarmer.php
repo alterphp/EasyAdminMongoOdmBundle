@@ -1,8 +1,8 @@
 <?php
 
-namespace AlterPHP\EasyAdminOdmBundle\Cache;
+namespace AlterPHP\EasyAdminMongoOdmBundle\Cache;
 
-use AlterPHP\EasyAdminOdmBundle\Configuration\ConfigManager;
+use AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 /**
