@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="easyadmin_odm.cache.manager" class="AlterPHP\EasyAdminOdmBundle\Cache\CacheManager" public="true">
+            <argument>%easyadmin_odm.cache.dir%</argument>
+        </service>
+        <service id="easyadmin_odm.cache.config_warmer" class="AlterPHP\EasyAdminOdmBundle\Cache\ConfigWarmer" public="false">
+            <argument type="service" id="easyadmin_odm.config.manager" />
+            <tag name="kernel.cache_warmer" priority="-2048" />
+        </service>
+        <service id="easyadmin_odm.config.manager" class="AlterPHP\EasyAdminOdmBundle\Configuration\ConfigManager" public="true">
+            <argument type="service" id="easyadmin_odm.cache.manager" />
+            <argument type="service" id="property_accessor" />
+            <argument>%easyadmin_odm.config%</argument>
+            <argument>%kernel.debug%</argument>
+        </service>
+    </services>
+</container>
