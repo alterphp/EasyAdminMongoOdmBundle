@@ -2,8 +2,8 @@
 
 namespace AlterPHP\EasyAdminOdmBundle\Configuration;
 
+use AlterPHP\EasyAdminOdmBundle\Cache\CacheManager;
 use AlterPHP\EasyAdminOdmBundle\Exception\UndefinedDocumentException;
-use EasyCorp\Bundle\EasyAdminBundle\Cache\CacheManager;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class ConfigManager
