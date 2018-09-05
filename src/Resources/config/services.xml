@@ -17,5 +17,10 @@
             <argument>%easyadmin_odm.config%</argument>
             <argument>%kernel.debug%</argument>
         </service>
+
+        <service id="easyadmin_odm.data_collector" class="AlterPHP\EasyAdminOdmBundle\DataCollector\EasyAdminOdmDataCollector" public="false">
+            <argument type="service" id="easyadmin_odm.config.manager" />
+            <tag name="data_collector" template="@EasyAdminOdm/data_collector/easyadmin_odm.html.twig" id="easyadmin_odm" />
+        </service>
     </services>
 </container>
