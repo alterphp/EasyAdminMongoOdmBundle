@@ -7,8 +7,9 @@ This bundle is under development and keeps experimental as long as no v1.0.0 tag
 ## TODOs
 
 * Controller listener to implement (and override controller by configuration)
-* Remove dql_filter config ?
-* Exception listenr for production env ?
+* Exception listener for production env ?
+* QueryBuilder => deal with associations ?
+* PropertyConfigPass is not implemented => item `format` per field is not preset
 
 ## Development tags
 

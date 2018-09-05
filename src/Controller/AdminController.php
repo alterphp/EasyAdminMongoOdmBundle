@@ -115,7 +115,7 @@ class AdminController extends Controller
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_LIST);
 
         $fields = $this->document['list']['fields'];
-        $paginator = $this->findAll($this->document['class'], $this->request->query->get('page', 1), $this->document['list']['max_results'], $this->request->query->get('sortField'), $this->request->query->get('sortDirection'), $this->document['list']['dql_filter']);
+        $paginator = $this->findAll($this->document['class'], $this->request->query->get('page', 1), $this->document['list']['max_results'], $this->request->query->get('sortField'), $this->request->query->get('sortDirection'));
 
         $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST, array('paginator' => $paginator));
 
@@ -176,6 +176,82 @@ class AdminController extends Controller
         );
 
         return false === in_array($actionName, $this->document['disabled_actions'], true);
+    }
+
+    /**
+     * Performs a database query to get all the records related to the given
+     * document. It supports pagination and field sorting.
+     *
+     * @param string      $documentClass
+     * @param int         $page
+     * @param int         $maxPerPage
+     * @param string|null $sortField
+     * @param string|null $sortDirection
+     *
+     * @return Pagerfanta The paginated query results
+     */
+    protected function findAll($documentClass, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
+    {
+        if (empty($sortDirection) || !in_array(strtoupper($sortDirection), array('ASC', 'DESC'))) {
+            $sortDirection = 'DESC';
+        }
+
+        $queryBuilder = $this->executeDynamicMethod('create<DocumentName>ListQueryBuilder', array($documentClass, $sortDirection, $sortField));
+
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST_QUERY_BUILDER, array(
+            'query_builder' => $queryBuilder,
+            'sort_field' => $sortField,
+            'sort_direction' => $sortDirection,
+        ));
+
+        return $this->get('easyadmin_mongo_odm.paginator')->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
+    }
+
+    /**
+     * Creates Query Builder instance for all the records.
+     *
+     * @param string      $documentClass
+     * @param string      $sortDirection
+     * @param string|null $sortField
+     *
+     * @return QueryBuilder The Query Builder instance
+     */
+    protected function createListQueryBuilder($documentClass, $sortDirection, $sortField = null)
+    {
+        return $this->get('easyadmin_mongo_odm.query_builder')->createListQueryBuilder($this->document, $sortField, $sortDirection);
+    }
+
+
+    /**
+     * Creates Query Builder instance for search query.
+     *
+     * @param string      $documentClass
+     * @param string      $searchQuery
+     * @param array       $searchableFields
+     * @param string|null $sortField
+     * @param string|null $sortDirection
+     *
+     * @return QueryBuilder The Query Builder instance
+     */
+    protected function createSearchQueryBuilder($documentClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null)
+    {
+        return $this->get('easyadmin_mongo_odm.query_builder')->createSearchQueryBuilder($this->document, $searchQuery, $sortField, $sortDirection);
+    }
+
+    /**
+     * Used to add/modify/remove parameters before passing them to the Twig template.
+     * Instead of defining a render method per action (list, show, search, etc.) use
+     * the $actionName argument to discriminate between actions.
+     *
+     * @param string $actionName   The name of the current action (list, show, new, etc.)
+     * @param string $templatePath The path of the Twig template to render
+     * @param array  $parameters   The parameters passed to the template
+     *
+     * @return Response
+     */
+    protected function renderTemplate($actionName, $templatePath, array $parameters = array())
+    {
+        return $this->render($templatePath, $parameters);
     }
 
     /**

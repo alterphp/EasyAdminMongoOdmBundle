@@ -17,6 +17,12 @@
             <argument>%easyadmin_mongo_odm.config%</argument>
             <argument>%kernel.debug%</argument>
         </service>
+        <service id="easyadmin_mongo_odm.query_builder" class="AlterPHP\EasyAdminMongoOdmBundle\Search\QueryBuilder" public="true">
+            <argument type="service" id="doctrine_mongodb" />
+        </service>
+
+        <service id="easyadmin_mongo_odm.paginator" class="AlterPHP\EasyAdminMongoOdmBundle\Search\Paginator" public="true">
+        </service>
 
         <!-- Datacollector -->
         <service id="easyadmin_mongo_odm.data_collector" class="AlterPHP\EasyAdminMongoOdmBundle\DataCollector\EasyAdminMongoOdmDataCollector" public="false">
@@ -57,6 +63,18 @@
         <service id="easyadmin_mongo_odm.configuration.metadata_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\MetadataConfigPass" public="false">
             <argument type="service" id="doctrine_mongodb" />
             <tag name="easyadmin_mongo_odm.config_pass" priority="50" />
+        </service>
+        <service id="easyadmin_mongo_odm.configuration.property_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\PropertyConfigPass" public="false">
+            <argument type="service" id="form.registry" />
+            <tag name="easyadmin_mongo_odm.config_pass" priority="40" />
+        </service>
+        <service id="easyadmin_mongo_odm.configuration.view_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ViewConfigPass" public="false">
+            <argument>%easyadmin.config%</argument>
+            <tag name="easyadmin_mongo_odm.config_pass" priority="30" />
+        </service>
+        <service id="easyadmin_mongo_odm.configuration.template_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\TemplateConfigPass" public="false">
+            <argument type="service" id="twig.loader.filesystem" />
+            <tag name="easyadmin_mongo_odm.config_pass" priority="20" />
         </service>
 
     </services>

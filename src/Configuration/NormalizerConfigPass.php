@@ -14,11 +14,9 @@ class NormalizerConfigPass implements ConfigPassInterface
     private $easyAdminBackendConfig;
     private $defaultViewConfig = array(
         'list' => array(
-            'dql_filter' => null,
             'fields' => array(),
         ),
         'search' => array(
-            'dql_filter' => null,
             'fields' => array(),
         ),
         'show' => array(
@@ -99,11 +97,6 @@ class NormalizerConfigPass implements ConfigPassInterface
     private function normalizeViewConfig(array $backendConfig)
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            // if the original 'search' config doesn't define its own DQL filter, use the one form 'list'
-            if (!isset($documentConfig['search']) || !array_key_exists('dql_filter', $documentConfig['search'])) {
-                $documentConfig['search']['dql_filter'] = isset($documentConfig['list']['dql_filter']) ? $documentConfig['list']['dql_filter'] : null;
-            }
-
             foreach (array_keys($this->defaultViewConfig) as $view) {
                 $documentConfig[$view] = array_replace_recursive(
                     $this->defaultViewConfig[$view],
