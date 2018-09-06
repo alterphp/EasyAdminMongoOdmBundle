@@ -35,7 +35,7 @@ class PropertyConfigPass implements ConfigPassInterface
         // is a virtual field or a real Doctrine document property?
         'virtual' => false,
         // listings can be sorted according to the values of this field
-        'sortable' => true,
+        'sortable' => false, // SORT_INDEX_ONLY true,
         // the path of the template used to render the field in 'show' and 'list' views
         'template' => null,
         // the options passed to the Symfony Form type used to render the form field

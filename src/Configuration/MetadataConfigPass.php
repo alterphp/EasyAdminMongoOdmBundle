@@ -58,9 +58,22 @@ class MetadataConfigPass implements ConfigPassInterface
     {
         $documentPropertiesMetadata = array();
 
+        // SORT_ONLY_INDEXES
+        $singleIndexes = $documentMetadata->getIdentifierFieldNames();
+        $singleIndexes = array_filter(array_merge($singleIndexes, array_map(function ($idx) {
+            if (1 === count($idx['keys'])) {
+                $indexes = array_keys($idx['keys']);
+
+                return reset($indexes);
+            }
+        }, $documentMetadata->getIndexes())));
+
         // introspect regular document fields
         foreach ($documentMetadata->fieldMappings as $fieldName => $fieldMetadata) {
-            $documentPropertiesMetadata[$fieldName] = $fieldMetadata;
+            $documentPropertiesMetadata[$fieldName] = array_merge($fieldMetadata, array(
+                // SORT_ONLY_INDEXES
+                'sortable' => in_array($fieldName, $singleIndexes),
+            ));
         }
 
         // introspect fields for document associations
