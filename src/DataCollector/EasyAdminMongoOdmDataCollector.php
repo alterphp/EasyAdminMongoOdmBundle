@@ -48,7 +48,7 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
         $currentDocumentConfig = array_key_exists($documentName, $backendConfig['documents']) ? $backendConfig['documents'][$documentName] : array();
 
         $this->data = array(
-            'documents' => count($backendConfig['documents']),
+            'num_documents' => count($backendConfig['documents']),
             'request_parameters' => $this->getEasyAdminMongoOdmParameters($request),
             'current_document_configuration' => $currentDocumentConfig,
             'backend_configuration' => $backendConfig,

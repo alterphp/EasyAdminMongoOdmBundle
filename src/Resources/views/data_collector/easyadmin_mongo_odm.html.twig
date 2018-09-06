@@ -95,14 +95,14 @@
                 <h3 class="tab-title">Full Backend Configuration</h3>
                 <div class="tab-content">
 
-                    <h4>Actions Configuration</h4>
+                    {# RESTRICTED_ACTIONS <h4>Actions Configuration</h4>
                     {{ collector.dump({
                         'disabled_actions': collector.backendConfig['disabled_actions'],
                         'list': collector.backendConfig['list'],
                         'edit': collector.backendConfig['edit'],
                         'new': collector.backendConfig['new'],
                         'show': collector.backendConfig['show'],
-                    })|raw }}
+                    })|raw }}#}
 
                     <h4>Documents Configuration</h4>
                     {{ collector.dump({

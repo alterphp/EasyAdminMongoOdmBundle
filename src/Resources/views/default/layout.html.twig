@@ -1,0 +1,26 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block main_menu_wrapper %}
+  {{ include([
+    _document_config is defined ? _document_config.templates.menu,
+    easyadmin_config('design.templates.menu'),
+    '@EasyAdminMongoOdm/default/menu.html.twig'
+  ]) }}
+{% endblock main_menu_wrapper %}
+
+{% block flash_messages %}
+  {{ include(
+    _document_config is defined ? _document_config.templates.flash_messages : '@EasyAdminMongoOdm/default/flash_messages.html.twig'
+  ) }}
+{% endblock flash_messages %}
+
+{% block content_help %}
+  {% if _document_config is defined and _document_config[app.request.query.get('action')]['help']|default(false) %}
+    <div class="box box-widget help-entity">
+      <div class="box-body">
+        {{ _document_config[app.request.query.get('action')]['help']|trans|raw }}
+      </div>
+    </div>
+  {% endif %}
+{% endblock content_help %}
+

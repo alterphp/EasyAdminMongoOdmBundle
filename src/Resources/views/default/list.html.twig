@@ -1,6 +1,6 @@
 {% set _document_config = easyadmin_mongo_odm_document(app.request.query.get('document')) %}
 {% trans_default_domain _document_config.translation_domain %}
-{% set _trans_parameters = { '%document_name%': _document_config.name|trans, '%document_label%': _document_config.label|trans } %}
+{% set _trans_parameters = { '%entity_name%': _document_config.name|trans, '%entity_label%': _document_config.label|trans } %}
 
 {% extends _document_config.templates.layout %}
 
