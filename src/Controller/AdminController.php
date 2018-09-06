@@ -173,6 +173,37 @@ class AdminController extends Controller
     }
 
     /**
+     * The method that is executed when the user performs a 'show' action on a document.
+     *
+     * @return Response
+     */
+    protected function showAction()
+    {
+        $this->dispatch(EasyAdminMongoOdmEvents::PRE_SHOW);
+
+        $id = $this->request->query->get('id');
+        $easyadmin = $this->request->attributes->get('easyadmin');
+        $document = $easyadmin['item'];
+
+        $fields = $this->document['show']['fields'];
+        // RESTRICTED_ACTIONS $deleteForm = $this->createDeleteForm($this->document['name'], $id);
+
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SHOW, array(
+            // RESTRICTED_ACTIONS 'deleteForm' => $deleteForm,
+            'fields' => $fields,
+            'document' => $document,
+        ));
+
+        $parameters = array(
+            'document' => $document,
+            'fields' => $fields,
+            // RESTRICTED_ACTIONS 'delete_form' => $deleteForm->createView(),
+        );
+
+        return $this->executeDynamicMethod('render<DocumentName>Template', array('show', $this->document['templates']['show'], $parameters));
+    }
+
+    /**
      * Given a method name pattern, it looks for the customized version of that
      * method (based on the document name) and executes it. If the custom method
      * does not exist, it executes the regular method.
