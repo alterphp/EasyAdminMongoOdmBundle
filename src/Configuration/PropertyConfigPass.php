@@ -14,7 +14,7 @@ use Symfony\Component\Form\Guess\ValueGuess;
  */
 class PropertyConfigPass implements ConfigPassInterface
 {
-    private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show')
+    private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show');
     private $defaultDocumentFieldConfig = array(
         // CSS class or classes applied to form field or list/show property
         'css_class' => '',

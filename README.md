@@ -4,6 +4,10 @@ Provides support of Doctrine Mongo ODM documents in EasyAdmin
 
 This bundle is under development and keeps experimental as long as no v1.0.0 tag is available !
 
+## Dev notes
+
+* TwigPathPass compiler pass makes @EasyAdminMongoOdm templates to be searched in EasyAdmin bundle if not found in EasyAdminMongoOdm bundle.
+
 ## TODOs
 
 * Controller listener to implement (and override controller by configuration)

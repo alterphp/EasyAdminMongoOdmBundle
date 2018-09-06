@@ -77,5 +77,13 @@
             <tag name="easyadmin_mongo_odm.config_pass" priority="20" />
         </service>
 
+        <!-- Twig extension -->
+        <service id="easyadmin_mongo_odm.twig.extension" class="AlterPHP\EasyAdminMongoOdmBundle\Twig\EasyAdminMongoOdmTwigExtension" public="false">
+            <argument type="service" id="easyadmin_mongo_odm.config.manager" />
+            <argument type="service" id="property_accessor" />
+            <argument>%kernel.debug%</argument>
+            <tag name="twig.extension" />
+        </service>
+
     </services>
 </container>

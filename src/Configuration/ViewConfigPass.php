@@ -11,7 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 class ViewConfigPass implements ConfigPassInterface
 {
     private $easyAdminBackendConfig;
-    private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show')
+    private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show');
 
     public function __construct(array $easyAdminBackendConfig)
     {

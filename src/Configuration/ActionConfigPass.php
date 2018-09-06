@@ -11,8 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 class ActionConfigPass implements ConfigPassInterface
 {
     private $easyAdminBackendConfig;
-    // RESTRICTED_ACTIONS : For now, edit and new are disabled
-    private $views = array('list', 'show');
+    private $views = array('list', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'show');
     private $defaultActionConfig = array(
         // either the name of a controller method or an application route (it depends on the 'type' option)
         'name' => null,
@@ -47,10 +46,14 @@ class ActionConfigPass implements ConfigPassInterface
 
     private function processDisabledActions(array $backendConfig)
     {
+        // RESTRICTED_ACTIONS
+        $actionsDisabledByCode = array('edit', 'new', 'delete');
+
         $actionsDisabledByBackend = $this->easyAdminBackendConfig['disabled_actions'];
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             $actionsDisabledByDocument = isset($documentConfig['disabled_actions']) ? $documentConfig['disabled_actions'] : array();
-            $disabledActions = array_unique(array_merge($actionsDisabledByBackend, $actionsDisabledByDocument));
+            // RESTRICTED_ACTIONS
+            $disabledActions = array_unique(array_merge($actionsDisabledByCode, $actionsDisabledByBackend, $actionsDisabledByDocument));
 
             $backendConfig['documents'][$documentName]['disabled_actions'] = $disabledActions;
         }
