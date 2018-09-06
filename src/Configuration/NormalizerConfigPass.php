@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class NormalizerConfigPass implements ConfigPassInterface
 {
+    // USE_MAIN_CONFIG
     private $easyAdminBackendConfig;
     private $defaultViewConfig = array(
         'list' => array(

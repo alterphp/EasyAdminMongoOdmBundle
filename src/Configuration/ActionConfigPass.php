@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
  */
 class ActionConfigPass implements ConfigPassInterface
 {
+    // USE_MAIN_CONFIG
     private $easyAdminBackendConfig;
     private $views = array('list', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'show');
     private $defaultActionConfig = array(

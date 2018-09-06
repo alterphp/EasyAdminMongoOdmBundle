@@ -17,4 +17,5 @@ This bundle is under development and keeps experimental as long as no v1.0.0 tag
 
 ## Development tags
 
+__USE_MAIN_CONFIG__ : Some backend configuration used from EasyAdmin bundle (when not specific to ODM)
 __RESTRICTED_ACTIONS__ : Indicates code that deals with actions limitation (new, edit and delete are not available for now)

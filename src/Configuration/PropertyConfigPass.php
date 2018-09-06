@@ -14,6 +14,8 @@ use Symfony\Component\Form\Guess\ValueGuess;
  */
 class PropertyConfigPass implements ConfigPassInterface
 {
+    // USE_MAIN_CONFIG
+    private $easyAdminBackendConfig;
     private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show');
     private $defaultDocumentFieldConfig = array(
         // CSS class or classes applied to form field or list/show property
@@ -61,9 +63,10 @@ class PropertyConfigPass implements ConfigPassInterface
 
     private $formRegistry;
 
-    public function __construct(FormRegistryInterface $formRegistry)
+    public function __construct(FormRegistryInterface $formRegistry, array $easyAdminBackendConfig)
     {
         $this->formRegistry = $formRegistry;
+        $this->easyAdminBackendConfig = $easyAdminBackendConfig;
     }
 
     public function process(array $backendConfig)
@@ -301,11 +304,11 @@ class PropertyConfigPass implements ConfigPassInterface
             $fieldType = ('datetimetz' === $fieldType) ? 'datetime' : $fieldType;
             $fieldType = ('_immutable' === substr($fieldType, -10)) ? substr($fieldType, 0, -10) : $fieldType;
 
-            return $backendConfig['formats'][$fieldType];
+            return $this->easyAdminBackendConfig['formats'][$fieldType];
         }
 
         if (in_array($fieldType, array('bigint', 'integer', 'smallint', 'decimal', 'float'))) {
-            return isset($backendConfig['formats']['number']) ? $backendConfig['formats']['number'] : null;
+            return isset($this->easyAdminBackendConfig['formats']['number']) ? $this->easyAdminBackendConfig['formats']['number'] : null;
         }
     }
 }

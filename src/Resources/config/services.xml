@@ -53,10 +53,12 @@
         <!-- ConfigPass -->
         <service id="easyadmin_mongo_odm.configuration.normalizer_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\NormalizerConfigPass" public="false">
             <argument id="service_container" type="service" />
+            <!-- USE_MAIN_CONFIG -->
             <argument>%easyadmin.config%</argument>
             <tag name="easyadmin_mongo_odm.config_pass" priority="90" />
         </service>
         <service id="easyadmin_mongo_odm.configuration.action_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ActionConfigPass" public="false">
+            <!-- USE_MAIN_CONFIG -->
             <argument>%easyadmin.config%</argument>
             <tag name="easyadmin_mongo_odm.config_pass" priority="60" />
         </service>
@@ -66,9 +68,12 @@
         </service>
         <service id="easyadmin_mongo_odm.configuration.property_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\PropertyConfigPass" public="false">
             <argument type="service" id="form.registry" />
+            <!-- USE_MAIN_CONFIG -->
+            <argument>%easyadmin.config%</argument>
             <tag name="easyadmin_mongo_odm.config_pass" priority="40" />
         </service>
         <service id="easyadmin_mongo_odm.configuration.view_config_pass" class="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ViewConfigPass" public="false">
+            <!-- USE_MAIN_CONFIG -->
             <argument>%easyadmin.config%</argument>
             <tag name="easyadmin_mongo_odm.config_pass" priority="30" />
         </service>
