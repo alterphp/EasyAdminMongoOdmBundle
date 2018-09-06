@@ -33,11 +33,12 @@ class QueryBuilder
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $dm->createQueryBuilder($documentConfig['class']);
 
+        /* NO_ASSOCIATION
         $isSortedByDoctrineAssociation = false !== strpos($sortField, '.');
         if ($isSortedByDoctrineAssociation) {
             $sortFieldParts = explode('.', $sortField);
             $queryBuilder->leftJoin('document.'.$sortFieldParts[0], $sortFieldParts[0]);
-        }
+        }*/
 
         if (null !== $sortField) {
             $queryBuilder->sort($sortField, $sortDirection);
@@ -70,10 +71,9 @@ class QueryBuilder
         $isSearchQueryUuid = 1 === preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $searchQuery);
         $lowerSearchQuery = mb_strtolower($searchQuery);
 
-        $queryParameters = array();
-        $documentAlreadyJoined = array();
+        // NO_ASSOCIATION $documentAlreadyJoined = array();
         foreach ($documentConfig['search']['fields'] as $fieldName => $metadata) {
-            $documentName = 'document';
+            /* NO_ASSOCIATION
             if (false !== strpos($fieldName, '.')) {
                 list($associatedDocumentName, $associatedFieldName) = explode('.', $fieldName);
                 if (!in_array($associatedDocumentName, $documentAlreadyJoined)) {
@@ -83,7 +83,7 @@ class QueryBuilder
 
                 $documentName = $associatedDocumentName;
                 $fieldName = $associatedFieldName;
-            }
+            }*/
 
             $isSmallIntegerField = 'smallint' === $metadata['dataType'];
             $isIntegerField = 'integer' === $metadata['dataType'];
@@ -97,25 +97,24 @@ class QueryBuilder
                 $isIntegerField && $isSearchQueryInteger ||
                 $isNumericField && $isSearchQueryNumeric
             ) {
-                $queryBuilder->orWhere(sprintf('%s.%s = :numeric_query', $documentName, $fieldName));
                 // adding '0' turns the string into a numeric value
-                $queryParameters['numeric_query'] = 0 + $searchQuery;
+                $queryBuilder->addOr($queryBuilder->expr()->field($fieldName)->equals(0 + $searchQuery));
             } elseif ($isGuidField && $isSearchQueryUuid) {
-                $queryBuilder->orWhere(sprintf('%s.%s = :uuid_query', $documentName, $fieldName));
-                $queryParameters['uuid_query'] = $searchQuery;
+                $queryBuilder->addOr($queryBuilder->expr()->field($fieldName)->equals($searchQuery));
             } elseif ($isTextField) {
-                $queryBuilder->orWhere(sprintf('LOWER(%s.%s) LIKE :fuzzy_query', $documentName, $fieldName));
-                $queryParameters['fuzzy_query'] = '%'.$lowerSearchQuery.'%';
-
-                $queryBuilder->orWhere(sprintf('LOWER(%s.%s) IN (:words_query)', $documentName, $fieldName));
-                $queryParameters['words_query'] = explode(' ', $lowerSearchQuery);
+                // Fuzzy query
+                $fuzzyRegexp = new \MongoRegex('/.*'.$lowerSearchQuery.'.*/i');
+                $queryBuilder->addOr(
+                    $queryBuilder->expr()->field($fieldName)->operator('$regex', $fuzzyRegexp)
+                );
+                // Words query
+                $queryBuilder->addOr(
+                    $queryBuilder->expr()->field($fieldName)->in(explode(' ', $lowerSearchQuery))
+                );
             }
         }
 
-        if (0 !== count($queryParameters)) {
-            $queryBuilder->setParameters($queryParameters);
-        }
-
+        /* NO_ASSOCIATION
         $isSortedByDoctrineAssociation = false !== strpos($sortField, '.');
         if ($isSortedByDoctrineAssociation) {
             list($associatedDocumentName, $associatedFieldName) = explode('.', $sortField);
@@ -123,7 +122,7 @@ class QueryBuilder
                 $queryBuilder->leftJoin('document.'.$associatedDocumentName, $associatedDocumentName);
                 $documentAlreadyJoined[] = $associatedDocumentName;
             }
-        }
+        }*/
 
         if (null !== $sortField) {
             $queryBuilder->sort($sortField, $sortDirection ?: 'DESC');

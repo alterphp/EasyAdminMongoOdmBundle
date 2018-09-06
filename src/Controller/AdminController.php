@@ -129,6 +129,50 @@ class AdminController extends Controller
     }
 
     /**
+     * The method that is executed when the user performs a query on an document.
+     *
+     * @return Response
+     */
+    protected function searchAction()
+    {
+        $this->dispatch(EasyAdminMongoOdmEvents::PRE_SEARCH);
+
+        $query = trim($this->request->query->get('query'));
+        // if the search query is empty, redirect to the 'list' action
+        if ('' === $query) {
+            $queryParameters = array_replace($this->request->query->all(), array('action' => 'list', 'query' => null));
+            $queryParameters = array_filter($queryParameters);
+
+            return $this->redirect($this->get('router')->generate('easyadmin_mongo_odm', $queryParameters));
+        }
+
+        $searchableFields = $this->document['search']['fields'];
+        $paginator = $this->findBy(
+            $this->document['class'],
+            $query,
+            $searchableFields,
+            $this->request->query->get('page', 1),
+            $this->document['list']['max_results'],
+            isset($this->document['search']['sort']['field']) ? $this->document['search']['sort']['field'] : $this->request->query->get('sortField'),
+            isset($this->document['search']['sort']['direction']) ? $this->document['search']['sort']['direction'] : $this->request->query->get('sortDirection')
+        );
+        $fields = $this->document['list']['fields'];
+
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH, array(
+            'fields' => $fields,
+            'paginator' => $paginator,
+        ));
+
+        $parameters = array(
+            'paginator' => $paginator,
+            'fields' => $fields,
+            // RESTRICTED_ACTIONS 'delete_form_template' => $this->createDeleteForm($this->document['name'], '__id__')->createView(),
+        );
+
+        return $this->executeDynamicMethod('render<DocumentName>Template', array('search', $this->document['templates']['list'], $parameters));
+    }
+
+    /**
      * Given a method name pattern, it looks for the customized version of that
      * method (based on the document name) and executes it. If the custom method
      * does not exist, it executes the regular method.
@@ -202,6 +246,33 @@ class AdminController extends Controller
             'query_builder' => $queryBuilder,
             'sort_field' => $sortField,
             'sort_direction' => $sortDirection,
+        ));
+
+        return $this->get('easyadmin_mongo_odm.paginator')->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
+    }
+
+    /**
+     * Performs a database query based on the search query provided by the user.
+     * It supports pagination and field sorting.
+     *
+     * @param string      $documentClass
+     * @param string      $searchQuery
+     * @param array       $searchableFields
+     * @param int         $page
+     * @param int         $maxPerPage
+     * @param string|null $sortField
+     * @param string|null $sortDirection
+     *
+     * @return Pagerfanta The paginated query results
+     */
+    protected function findBy($documentClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
+    {
+        $queryBuilder = $this->executeDynamicMethod('create<DocumentName>SearchQueryBuilder', array($documentClass, $searchQuery, $searchableFields, $sortField, $sortDirection));
+
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH_QUERY_BUILDER, array(
+            'query_builder' => $queryBuilder,
+            'search_query' => $searchQuery,
+            'searchable_fields' => $searchableFields,
         ));
 
         return $this->get('easyadmin_mongo_odm.paginator')->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
