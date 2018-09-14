@@ -211,6 +211,7 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
             $parameters['is_accessible'] = false;
         }
 
+        /*
         if ('image' === $fieldType) {
             $parameters = $this->addImageFieldParameters($parameters);
         }
@@ -222,6 +223,7 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
         if ('association' === $fieldType) {
             $parameters = $this->addAssociationFieldParameters($parameters);
         }
+        */
 
         if (true === $fieldMetadata['virtual']) {
             // when a virtual field doesn't define it's type, consider it a string
