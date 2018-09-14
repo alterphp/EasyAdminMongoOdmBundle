@@ -84,7 +84,7 @@ class MetadataConfigPass implements ConfigPassInterface
             ));
 
             // associations different from *-to-one cannot be sorted
-            if ($associationMetadata['type'] & ClassMetadata::TO_MANY) {
+            if ($associationMetadata['type'] & ClassMetadata::REFERENCE_MANY) {
                 $documentPropertiesMetadata[$fieldName]['sortable'] = false;
             }
         }
