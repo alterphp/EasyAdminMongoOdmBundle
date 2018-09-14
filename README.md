@@ -42,7 +42,6 @@ easy_admin:
 
 ## TODOs
 
-* Show view for fields of type `hash`
 * Controller listener to implement (and override controller by configuration)
 * Exception listener for production env ?
 * QueryBuilder => deal with associations ?
