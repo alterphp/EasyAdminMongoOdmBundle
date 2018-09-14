@@ -7,15 +7,15 @@ use AlterPHP\EasyAdminMongoOdmBundle\Exception\ForbiddenActionException;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\NoDocumentsConfiguredException;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\UndefinedDocumentException;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AdminController as BaseAdminController;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController extends Controller
+class AdminController extends BaseAdminController
 {
     /** @var array The full configuration of the entire backend */
-    protected $config;
+    protected $mongoOdmConfig;
     /** @var array The full configuration of the current document */
     protected $document = array();
     /** @var Request The instance of the current Symfony request */
@@ -56,9 +56,9 @@ class AdminController extends Controller
     {
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_INITIALIZE);
 
-        $this->config = $this->get('easyadmin_mongo_odm.config.manager')->getBackendConfig();
+        $this->mongoOdmConfig = $this->get('easyadmin_mongo_odm.config.manager')->getBackendConfig();
 
-        if (0 === count($this->config['documents'])) {
+        if (0 === count($this->mongoOdmConfig['documents'])) {
             throw new NoDocumentsConfiguredException();
         }
 
@@ -68,7 +68,7 @@ class AdminController extends Controller
             return;
         }
 
-        if (!array_key_exists($documentName, $this->config['documents'])) {
+        if (!array_key_exists($documentName, $this->mongoOdmConfig['documents'])) {
             throw new UndefinedDocumentException(array('document_name' => $documentName));
         }
 
@@ -84,7 +84,7 @@ class AdminController extends Controller
             $request->query->set('sortDirection', $sortDirection);
         }
 
-        $this->dm = $this->getDoctrine()->getManagerForClass($this->document['class']);
+        $this->dm = $this->getMongoOdmDoctrine()->getManagerForClass($this->document['class']);
         $this->request = $request;
 
         $this->dispatch(EasyAdminMongoOdmEvents::POST_INITIALIZE);
@@ -93,7 +93,7 @@ class AdminController extends Controller
     protected function dispatch($eventName, array $arguments = array())
     {
         $arguments = array_replace(array(
-            'config' => $this->config,
+            'config' => $this->mongoOdmConfig,
             'dm' => $this->dm,
             'document' => $this->document,
             'request' => $this->request,
@@ -115,7 +115,7 @@ class AdminController extends Controller
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_LIST);
 
         $fields = $this->document['list']['fields'];
-        $paginator = $this->findAll($this->document['class'], $this->request->query->get('page', 1), $this->document['list']['max_results'], $this->request->query->get('sortField'), $this->request->query->get('sortDirection'));
+        $paginator = $this->mongoOdmFindAll($this->document['class'], $this->request->query->get('page', 1), $this->document['list']['max_results'], $this->request->query->get('sortField'), $this->request->query->get('sortDirection'));
 
         $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST, array('paginator' => $paginator));
 
@@ -147,7 +147,7 @@ class AdminController extends Controller
         }
 
         $searchableFields = $this->document['search']['fields'];
-        $paginator = $this->findBy(
+        $paginator = $this->mongoOdmFindBy(
             $this->document['class'],
             $query,
             $searchableFields,
@@ -209,7 +209,7 @@ class AdminController extends Controller
      * does not exist, it executes the regular method.
      *
      * For example:
-     *   executeDynamicMethod('create<DocumentName>Entity') and the document name is 'User'
+     *   executeDynamicMethod('create<DocumentName>Document') and the document name is 'User'
      *   if 'createUserDocument()' exists, execute it; otherwise execute 'createDocument()'
      *
      * @param string $methodNamePattern The pattern of the method name (dynamic parts are enclosed with <> angle brackets)
@@ -265,13 +265,13 @@ class AdminController extends Controller
      *
      * @return Pagerfanta The paginated query results
      */
-    protected function findAll($documentClass, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
+    protected function mongoOdmFindAll($documentClass, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
     {
         if (empty($sortDirection) || !in_array(strtoupper($sortDirection), array('ASC', 'DESC'))) {
             $sortDirection = 'DESC';
         }
 
-        $queryBuilder = $this->executeDynamicMethod('create<DocumentName>ListQueryBuilder', array($documentClass, $sortDirection, $sortField));
+        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>ListQueryBuilder', array($documentClass, $sortDirection, $sortField));
 
         $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST_QUERY_BUILDER, array(
             'query_builder' => $queryBuilder,
@@ -296,9 +296,9 @@ class AdminController extends Controller
      *
      * @return Pagerfanta The paginated query results
      */
-    protected function findBy($documentClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
+    protected function mongoOdmFindBy($documentClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
     {
-        $queryBuilder = $this->executeDynamicMethod('create<DocumentName>SearchQueryBuilder', array($documentClass, $searchQuery, $searchableFields, $sortField, $sortDirection));
+        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>SearchQueryBuilder', array($documentClass, $searchQuery, $searchableFields, $sortField, $sortDirection));
 
         $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH_QUERY_BUILDER, array(
             'query_builder' => $queryBuilder,
@@ -318,7 +318,7 @@ class AdminController extends Controller
      *
      * @return QueryBuilder The Query Builder instance
      */
-    protected function createListQueryBuilder($documentClass, $sortDirection, $sortField = null)
+    protected function createMongoOdmListQueryBuilder($documentClass, $sortDirection, $sortField = null)
     {
         return $this->get('easyadmin_mongo_odm.query_builder')->createListQueryBuilder($this->document, $sortField, $sortDirection);
     }
@@ -335,7 +335,7 @@ class AdminController extends Controller
      *
      * @return QueryBuilder The Query Builder instance
      */
-    protected function createSearchQueryBuilder($documentClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null)
+    protected function createMongoOdmSearchQueryBuilder($documentClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null)
     {
         return $this->get('easyadmin_mongo_odm.query_builder')->createSearchQueryBuilder($this->document, $searchQuery, $sortField, $sortDirection);
     }
@@ -359,7 +359,7 @@ class AdminController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function getDoctrine(): ManagerRegistry
+    protected function getMongoOdmDoctrine(): ManagerRegistry
     {
         if (!$this->container->has('doctrine_mongodb')) {
             throw new \LogicException('The DoctrineMongoDBBundle is not registered in your application. Try running "composer require doctrine/mongodb-odm-bundle".');
