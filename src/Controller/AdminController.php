@@ -229,31 +229,6 @@ class AdminController extends BaseAdminController
     }
 
     /**
-     * Utility method that checks if the given action is allowed for
-     * the current document.
-     *
-     * @param string $actionName
-     *
-     * @return bool
-     */
-    protected function isActionAllowed($actionName)
-    {
-        // autocomplete and embeddedList action are mapped to list action for access permissions
-        if (in_array($actionName, ['autocomplete', 'embeddedList'])) {
-            $actionName = 'list';
-        }
-
-        // Get item for edit/show or custom actions => security voters may apply
-        $easyadmin = $this->request->attributes->get('easyadmin_mongo_odm');
-        $subject = $easyadmin['item'] ?? null;
-        $this->get('alterphp.easyadmin_extension.admin_authorization_checker')->checksUserAccess(
-            $this->document, $actionName, $subject
-        );
-
-        return false === in_array($actionName, $this->document['disabled_actions'], true);
-    }
-
-    /**
      * Performs a database query to get all the records related to the given
      * document. It supports pagination and field sorting.
      *

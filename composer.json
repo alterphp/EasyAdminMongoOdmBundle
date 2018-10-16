@@ -13,7 +13,6 @@
     ],
     "require": {
         "php": ">=7.0",
-        "alterphp/easyadmin-extension-bundle": "*",
         "easycorp/easyadmin-bundle": "^1.17"
     },
     "require-dev": {
