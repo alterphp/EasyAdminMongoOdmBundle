@@ -204,6 +204,14 @@ class AdminController extends BaseAdminController
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function isActionAllowed($actionName)
+    {
+        return false === in_array($actionName, $this->document['disabled_actions'], true);
+    }
+
+    /**
      * Given a method name pattern, it looks for the customized version of that
      * method (based on the document name) and executes it. If the custom method
      * does not exist, it executes the regular method.
