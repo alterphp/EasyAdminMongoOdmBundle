@@ -49,7 +49,7 @@ class RequestPostInitializeListener
             return;
         }
 
-        $this->request->attributes->set('easyadmin', array(
+        $this->request->attributes->set('easyadmin_mongo_odm', array(
             'document' => $document = $event->getArgument('document'),
             'view' => $this->request->query->get('action', 'list'),
             'item' => ($id = $this->request->query->get('id')) ? $this->findCurrentItem($document, $id) : null,
