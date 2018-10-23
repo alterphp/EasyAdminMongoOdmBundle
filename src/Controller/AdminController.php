@@ -182,8 +182,8 @@ class AdminController extends BaseAdminController
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_SHOW);
 
         $id = $this->request->query->get('id');
-        $easyadminmongoOdm = $this->request->attributes->get('easyadmin_mongo_odm');
-        $document = $easyadminmongoOdm['item'];
+        $easyadminMongoOdm = $this->request->attributes->get('easyadmin_mongo_odm');
+        $document = $easyadminMongoOdm['item'];
 
         $fields = $this->document['show']['fields'];
         // RESTRICTED_ACTIONS $deleteForm = $this->createDeleteForm($this->document['name'], $id);
