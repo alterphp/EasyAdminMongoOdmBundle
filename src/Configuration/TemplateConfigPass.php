@@ -40,6 +40,7 @@ class TemplateConfigPass implements ConfigPassInterface
         'field_image' => '@EasyAdminMongoOdm/default/field_image.html.twig',
         'field_json' => '@EasyAdminMongoOdm/default/field_json.html.twig',
         'field_json_array' => '@EasyAdminMongoOdm/default/field_json_array.html.twig',
+        'field_int' => '@EasyAdminMongoOdm/default/field_integer.html.twig',
         'field_integer' => '@EasyAdminMongoOdm/default/field_integer.html.twig',
         'field_object' => '@EasyAdminMongoOdm/default/field_object.html.twig',
         'field_raw' => '@EasyAdminMongoOdm/default/field_raw.html.twig',
