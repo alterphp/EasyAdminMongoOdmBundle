@@ -2,6 +2,9 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\Exception;
 
+use EasyCorp\Bundle\EasyAdminBundle\Exception\BaseException;
+use EasyCorp\Bundle\EasyAdminBundle\Exception\ExceptionContext;
+
 class ForbiddenActionException extends BaseException
 {
     public function __construct(array $parameters = array())
