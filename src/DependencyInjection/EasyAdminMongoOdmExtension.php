@@ -2,6 +2,7 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\DependencyInjection;
 
+use AlterPHP\EasyAdminMongoOdmBundle\Cache\ConfigWarmer;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -36,7 +37,7 @@ class EasyAdminMongoOdmExtension extends Extension
             // // in 'dev', use the built-in Symfony exception listener
             // $container->removeDefinition('easyadmin.listener.exception');
             // avoid parsing the entire config in 'dev' (even for requests unrelated to the backend)
-            $container->removeDefinition('easyadmin_mongo_odm.cache.config_warmer');
+            $container->removeDefinition(ConfigWarmer::class);
         }
     }
 

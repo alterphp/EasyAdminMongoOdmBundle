@@ -2,17 +2,20 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\Controller;
 
+use AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager;
 use AlterPHP\EasyAdminMongoOdmBundle\Event\EasyAdminMongoOdmEvents;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\ForbiddenActionException;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\NoDocumentsConfiguredException;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\UndefinedDocumentException;
+use AlterPHP\EasyAdminMongoOdmBundle\Search\Paginator;
+use AlterPHP\EasyAdminMongoOdmBundle\Search\QueryBuilder;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AdminController as BaseAdminController;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController as BaseEasyAdminController;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController extends BaseAdminController
+class EasyAdminController extends BaseEasyAdminController
 {
     /** @var array The full configuration of the entire backend */
     protected $mongoOdmConfig;
@@ -22,6 +25,19 @@ class AdminController extends BaseAdminController
     protected $request;
     /** @var DocumentManager The Doctrine document manager for the current document */
     protected $dm;
+
+    public static function getSubscribedServices(): array
+    {
+        return \array_merge(
+            parent::getSubscribedServices(),
+            [
+                ConfigManager::class,
+                QueryBuilder::class,
+                Paginator::class,
+            ]
+        );
+    }
+
 
     /**
      * @Route("/", name="easyadmin_mongo_odm")
@@ -56,7 +72,7 @@ class AdminController extends BaseAdminController
     {
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_INITIALIZE);
 
-        $this->mongoOdmConfig = $this->get('easyadmin_mongo_odm.config.manager')->getBackendConfig();
+        $this->mongoOdmConfig = $this->get(ConfigManager::class)->getBackendConfig();
 
         if (0 === count($this->mongoOdmConfig['documents'])) {
             throw new NoDocumentsConfiguredException();
@@ -72,7 +88,7 @@ class AdminController extends BaseAdminController
             throw new UndefinedDocumentException(array('document_name' => $documentName));
         }
 
-        $this->document = $this->get('easyadmin_mongo_odm.config.manager')->getDocumentConfiguration($documentName);
+        $this->document = $this->get(ConfigManager::class)->getDocumentConfiguration($documentName);
 
         $action = $request->query->get('action', 'list');
         if (!$request->query->has('sortField')) {
@@ -262,7 +278,7 @@ class AdminController extends BaseAdminController
             'sort_direction' => $sortDirection,
         ));
 
-        return $this->get('easyadmin_mongo_odm.paginator')->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
+        return $this->get(Paginator::class)->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
     }
 
     /**
@@ -289,7 +305,7 @@ class AdminController extends BaseAdminController
             'searchable_fields' => $searchableFields,
         ));
 
-        return $this->get('easyadmin_mongo_odm.paginator')->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
+        return $this->get(Paginator::class)->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
     }
 
     /**
@@ -303,7 +319,7 @@ class AdminController extends BaseAdminController
      */
     protected function createMongoOdmListQueryBuilder($documentClass, $sortDirection, $sortField = null)
     {
-        return $this->get('easyadmin_mongo_odm.query_builder')->createListQueryBuilder($this->document, $sortField, $sortDirection);
+        return $this->get(QueryBuilder::class)->createListQueryBuilder($this->document, $sortField, $sortDirection);
     }
 
 
@@ -320,7 +336,7 @@ class AdminController extends BaseAdminController
      */
     protected function createMongoOdmSearchQueryBuilder($documentClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null)
     {
-        return $this->get('easyadmin_mongo_odm.query_builder')->createSearchQueryBuilder($this->document, $searchQuery, $sortField, $sortDirection);
+        return $this->get(QueryBuilder::class)->createSearchQueryBuilder($this->document, $searchQuery, $sortField, $sortDirection);
     }
 
     /**
