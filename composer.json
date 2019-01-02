@@ -12,8 +12,8 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "easycorp/easyadmin-bundle": "^1.17"
+        "php": ">=7.1",
+        "easycorp/easyadmin-bundle": "^2.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.11",
