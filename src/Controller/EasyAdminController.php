@@ -20,7 +20,7 @@ class EasyAdminController extends BaseEasyAdminController
     /** @var array The full configuration of the entire backend */
     protected $mongoOdmConfig;
     /** @var array The full configuration of the current document */
-    protected $document = array();
+    protected $document = [];
     /** @var Request The instance of the current Symfony request */
     protected $request;
     /** @var DocumentManager The Doctrine document manager for the current document */
@@ -37,7 +37,6 @@ class EasyAdminController extends BaseEasyAdminController
             ]
         );
     }
-
 
     /**
      * @Route("/", name="easyadmin_mongo_odm")
@@ -56,7 +55,7 @@ class EasyAdminController extends BaseEasyAdminController
 
         $action = $request->query->get('action', 'list');
         if (!$this->isActionAllowed($action)) {
-            throw new ForbiddenActionException(array('action' => $action, 'document_name' => $this->document['name']));
+            throw new ForbiddenActionException(['action' => $action, 'document_name' => $this->document['name']]);
         }
 
         return $this->executeDynamicMethod($action.'<DocumentName>Action');
@@ -74,7 +73,7 @@ class EasyAdminController extends BaseEasyAdminController
 
         $this->mongoOdmConfig = $this->get(ConfigManager::class)->getBackendConfig();
 
-        if (0 === count($this->mongoOdmConfig['documents'])) {
+        if (0 === \count($this->mongoOdmConfig['documents'])) {
             throw new NoDocumentsConfiguredException();
         }
 
@@ -84,8 +83,8 @@ class EasyAdminController extends BaseEasyAdminController
             return;
         }
 
-        if (!array_key_exists($documentName, $this->mongoOdmConfig['documents'])) {
-            throw new UndefinedDocumentException(array('document_name' => $documentName));
+        if (!\array_key_exists($documentName, $this->mongoOdmConfig['documents'])) {
+            throw new UndefinedDocumentException(['document_name' => $documentName]);
         }
 
         $this->document = $this->get(ConfigManager::class)->getDocumentConfiguration($documentName);
@@ -106,14 +105,14 @@ class EasyAdminController extends BaseEasyAdminController
         $this->dispatch(EasyAdminMongoOdmEvents::POST_INITIALIZE);
     }
 
-    protected function dispatch($eventName, array $arguments = array())
+    protected function dispatch($eventName, array $arguments = [])
     {
-        $arguments = array_replace(array(
+        $arguments = \array_replace([
             'config' => $this->mongoOdmConfig,
             'dm' => $this->dm,
             'document' => $this->document,
             'request' => $this->request,
-        ), $arguments);
+        ], $arguments);
 
         $subject = isset($arguments['paginator']) ? $arguments['paginator'] : $arguments['document'];
         $event = new GenericEvent($subject, $arguments);
@@ -133,15 +132,15 @@ class EasyAdminController extends BaseEasyAdminController
         $fields = $this->document['list']['fields'];
         $paginator = $this->mongoOdmFindAll($this->document['class'], $this->request->query->get('page', 1), $this->document['list']['max_results'], $this->request->query->get('sortField'), $this->request->query->get('sortDirection'));
 
-        $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST, array('paginator' => $paginator));
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST, ['paginator' => $paginator]);
 
-        $parameters = array(
+        $parameters = [
             'paginator' => $paginator,
             'fields' => $fields,
             // RESTRICTED_ACTIONS 'delete_form_template' => $this->createDeleteForm($this->document['name'], '__id__')->createView(),
-        );
+        ];
 
-        return $this->executeDynamicMethod('render<DocumentName>Template', array('list', $this->document['templates']['list'], $parameters));
+        return $this->executeDynamicMethod('render<DocumentName>Template', ['list', $this->document['templates']['list'], $parameters]);
     }
 
     /**
@@ -153,11 +152,11 @@ class EasyAdminController extends BaseEasyAdminController
     {
         $this->dispatch(EasyAdminMongoOdmEvents::PRE_SEARCH);
 
-        $query = trim($this->request->query->get('query'));
+        $query = \trim($this->request->query->get('query'));
         // if the search query is empty, redirect to the 'list' action
         if ('' === $query) {
-            $queryParameters = array_replace($this->request->query->all(), array('action' => 'list', 'query' => null));
-            $queryParameters = array_filter($queryParameters);
+            $queryParameters = \array_replace($this->request->query->all(), ['action' => 'list', 'query' => null]);
+            $queryParameters = \array_filter($queryParameters);
 
             return $this->redirect($this->get('router')->generate('easyadmin_mongo_odm', $queryParameters));
         }
@@ -174,18 +173,18 @@ class EasyAdminController extends BaseEasyAdminController
         );
         $fields = $this->document['list']['fields'];
 
-        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH, array(
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH, [
             'fields' => $fields,
             'paginator' => $paginator,
-        ));
+        ]);
 
-        $parameters = array(
+        $parameters = [
             'paginator' => $paginator,
             'fields' => $fields,
             // RESTRICTED_ACTIONS 'delete_form_template' => $this->createDeleteForm($this->document['name'], '__id__')->createView(),
-        );
+        ];
 
-        return $this->executeDynamicMethod('render<DocumentName>Template', array('search', $this->document['templates']['list'], $parameters));
+        return $this->executeDynamicMethod('render<DocumentName>Template', ['search', $this->document['templates']['list'], $parameters]);
     }
 
     /**
@@ -204,19 +203,19 @@ class EasyAdminController extends BaseEasyAdminController
         $fields = $this->document['show']['fields'];
         // RESTRICTED_ACTIONS $deleteForm = $this->createDeleteForm($this->document['name'], $id);
 
-        $this->dispatch(EasyAdminMongoOdmEvents::POST_SHOW, array(
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SHOW, [
             // RESTRICTED_ACTIONS 'deleteForm' => $deleteForm,
             'fields' => $fields,
             'document' => $document,
-        ));
+        ]);
 
-        $parameters = array(
+        $parameters = [
             'document' => $document,
             'fields' => $fields,
             // RESTRICTED_ACTIONS 'delete_form' => $deleteForm->createView(),
-        );
+        ];
 
-        return $this->executeDynamicMethod('render<DocumentName>Template', array('show', $this->document['templates']['show'], $parameters));
+        return $this->executeDynamicMethod('render<DocumentName>Template', ['show', $this->document['templates']['show'], $parameters]);
     }
 
     /**
@@ -224,7 +223,7 @@ class EasyAdminController extends BaseEasyAdminController
      */
     protected function isActionAllowed($actionName)
     {
-        return false === in_array($actionName, $this->document['disabled_actions'], true);
+        return false === \in_array($actionName, $this->document['disabled_actions'], true);
     }
 
     /**
@@ -241,15 +240,15 @@ class EasyAdminController extends BaseEasyAdminController
      *
      * @return mixed
      */
-    protected function executeDynamicMethod($methodNamePattern, array $arguments = array())
+    protected function executeDynamicMethod($methodNamePattern, array $arguments = [])
     {
-        $methodName = str_replace('<DocumentName>', $this->document['name'], $methodNamePattern);
+        $methodName = \str_replace('<DocumentName>', $this->document['name'], $methodNamePattern);
 
-        if (!is_callable(array($this, $methodName))) {
-            $methodName = str_replace('<DocumentName>', '', $methodNamePattern);
+        if (!\is_callable([$this, $methodName])) {
+            $methodName = \str_replace('<DocumentName>', '', $methodNamePattern);
         }
 
-        return call_user_func_array(array($this, $methodName), $arguments);
+        return \call_user_func_array([$this, $methodName], $arguments);
     }
 
     /**
@@ -266,17 +265,17 @@ class EasyAdminController extends BaseEasyAdminController
      */
     protected function mongoOdmFindAll($documentClass, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
     {
-        if (empty($sortDirection) || !in_array(strtoupper($sortDirection), array('ASC', 'DESC'))) {
+        if (empty($sortDirection) || !\in_array(\strtoupper($sortDirection), ['ASC', 'DESC'])) {
             $sortDirection = 'DESC';
         }
 
-        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>ListQueryBuilder', array($documentClass, $sortDirection, $sortField));
+        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>ListQueryBuilder', [$documentClass, $sortDirection, $sortField]);
 
-        $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST_QUERY_BUILDER, array(
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_LIST_QUERY_BUILDER, [
             'query_builder' => $queryBuilder,
             'sort_field' => $sortField,
             'sort_direction' => $sortDirection,
-        ));
+        ]);
 
         return $this->get(Paginator::class)->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
     }
@@ -297,13 +296,13 @@ class EasyAdminController extends BaseEasyAdminController
      */
     protected function mongoOdmFindBy($documentClass, $searchQuery, array $searchableFields, $page = 1, $maxPerPage = 15, $sortField = null, $sortDirection = null)
     {
-        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>SearchQueryBuilder', array($documentClass, $searchQuery, $searchableFields, $sortField, $sortDirection));
+        $queryBuilder = $this->executeDynamicMethod('createMongoOdm<DocumentName>SearchQueryBuilder', [$documentClass, $searchQuery, $searchableFields, $sortField, $sortDirection]);
 
-        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH_QUERY_BUILDER, array(
+        $this->dispatch(EasyAdminMongoOdmEvents::POST_SEARCH_QUERY_BUILDER, [
             'query_builder' => $queryBuilder,
             'search_query' => $searchQuery,
             'searchable_fields' => $searchableFields,
-        ));
+        ]);
 
         return $this->get(Paginator::class)->createMongoOdmPaginator($queryBuilder, $page, $maxPerPage);
     }
@@ -321,7 +320,6 @@ class EasyAdminController extends BaseEasyAdminController
     {
         return $this->get(QueryBuilder::class)->createListQueryBuilder($this->document, $sortField, $sortDirection);
     }
-
 
     /**
      * Creates Query Builder instance for search query.
@@ -350,7 +348,7 @@ class EasyAdminController extends BaseEasyAdminController
      *
      * @return Response
      */
-    protected function renderTemplate($actionName, $templatePath, array $parameters = array())
+    protected function renderTemplate($actionName, $templatePath, array $parameters = [])
     {
         return $this->render($templatePath, $parameters);
     }

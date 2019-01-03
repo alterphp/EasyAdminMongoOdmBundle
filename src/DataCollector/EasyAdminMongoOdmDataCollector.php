@@ -26,12 +26,12 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
      */
     public function reset()
     {
-        $this->data = array(
+        $this->data = [
             'num_documents' => 0,
             'request_parameters' => null,
             'current_document_configuration' => null,
             'backend_configuration' => null,
-        );
+        ];
     }
 
     /**
@@ -45,14 +45,14 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
 
         $backendConfig = $this->configManager->getBackendConfig();
         $documentName = $request->query->get('document', null);
-        $currentDocumentConfig = array_key_exists($documentName, $backendConfig['documents']) ? $backendConfig['documents'][$documentName] : array();
+        $currentDocumentConfig = \array_key_exists($documentName, $backendConfig['documents']) ? $backendConfig['documents'][$documentName] : [];
 
-        $this->data = array(
-            'num_documents' => count($backendConfig['documents']),
+        $this->data = [
+            'num_documents' => \count($backendConfig['documents']),
             'request_parameters' => $this->getEasyAdminMongoOdmParameters($request),
             'current_document_configuration' => $currentDocumentConfig,
             'backend_configuration' => $backendConfig,
-        );
+        ];
     }
 
     /**
@@ -62,13 +62,13 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
      */
     private function getEasyAdminMongoOdmParameters(Request $request)
     {
-        return array(
+        return [
             'action' => $request->query->get('action'),
             'document' => $request->query->get('document'),
             'id' => $request->query->get('id'),
             'sort_field' => $request->query->get('sortField'),
             'sort_direction' => $request->query->get('sortDirection'),
-        );
+        ];
     }
 
     /**
@@ -122,16 +122,16 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
      */
     public function dump($variable)
     {
-        if (class_exists('Symfony\Component\VarDumper\Dumper\HtmlDumper')) {
+        if (\class_exists('Symfony\Component\VarDumper\Dumper\HtmlDumper')) {
             $cloner = new VarCloner();
             $dumper = new HtmlDumper();
 
-            $dumper->dump($cloner->cloneVar($variable), $output = fopen('php://memory', 'r+b'));
-            $dumpedData = stream_get_contents($output, -1, 0);
-        } elseif (class_exists('Symfony\Component\Yaml\Yaml')) {
-            $dumpedData = sprintf('<pre class="sf-dump">%s</pre>', Yaml::dump((array) $variable, 1024));
+            $dumper->dump($cloner->cloneVar($variable), $output = \fopen('php://memory', 'r+b'));
+            $dumpedData = \stream_get_contents($output, -1, 0);
+        } elseif (\class_exists('Symfony\Component\Yaml\Yaml')) {
+            $dumpedData = \sprintf('<pre class="sf-dump">%s</pre>', Yaml::dump((array) $variable, 1024));
         } else {
-            $dumpedData = sprintf('<pre class="sf-dump">%s</pre>', var_export($variable, true));
+            $dumpedData = \sprintf('<pre class="sf-dump">%s</pre>', \var_export($variable, true));
         }
 
         return $dumpedData;

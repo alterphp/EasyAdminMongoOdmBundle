@@ -20,7 +20,7 @@ final class EasyAdminMongoOdmConfigPass implements CompilerPassInterface
         $definition = $container->getDefinition(ConfigManager::class);
 
         foreach ($configPasses as $service) {
-            $definition->addMethodCall('addConfigPass', array($service));
+            $definition->addMethodCall('addConfigPass', [$service]);
         }
     }
 }

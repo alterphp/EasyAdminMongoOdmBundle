@@ -66,11 +66,11 @@ class QueryBuilder
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $dm->createQueryBuilder($documentConfig['class']);
 
-        $isSearchQueryNumeric = is_numeric($searchQuery);
-        $isSearchQuerySmallInteger = (is_int($searchQuery) || ctype_digit($searchQuery)) && $searchQuery >= -32768 && $searchQuery <= 32767;
-        $isSearchQueryInteger = (is_int($searchQuery) || ctype_digit($searchQuery)) && $searchQuery >= -2147483648 && $searchQuery <= 2147483647;
+        $isSearchQueryNumeric = \is_numeric($searchQuery);
+        $isSearchQuerySmallInteger = (\is_int($searchQuery) || \ctype_digit($searchQuery)) && $searchQuery >= -32768 && $searchQuery <= 32767;
+        $isSearchQueryInteger = (\is_int($searchQuery) || \ctype_digit($searchQuery)) && $searchQuery >= -2147483648 && $searchQuery <= 2147483647;
         $isSearchQueryUuid = Uuid::isValid($searchQuery);
-        $lowerSearchQuery = mb_strtolower($searchQuery);
+        $lowerSearchQuery = \mb_strtolower($searchQuery);
 
         // NO_ASSOCIATION $documentAlreadyJoined = array();
         foreach ($documentConfig['search']['fields'] as $fieldName => $metadata) {
@@ -88,8 +88,8 @@ class QueryBuilder
 
             $isSmallIntegerField = 'smallint' === $metadata['dataType'];
             $isIntegerField = 'integer' === $metadata['dataType'];
-            $isNumericField = in_array($metadata['dataType'], array('number', 'bigint', 'decimal', 'float'));
-            $isTextField = in_array($metadata['dataType'], array('string', 'text'));
+            $isNumericField = \in_array($metadata['dataType'], ['number', 'bigint', 'decimal', 'float']);
+            $isTextField = \in_array($metadata['dataType'], ['string', 'text']);
             $isGuidField = 'guid' === $metadata['dataType'];
 
             // this complex condition is needed to avoid issues on PostgreSQL databases
@@ -110,7 +110,7 @@ class QueryBuilder
                 );
                 // Words query
                 $queryBuilder->addOr(
-                    $queryBuilder->expr()->field($fieldName)->in(explode(' ', $lowerSearchQuery))
+                    $queryBuilder->expr()->field($fieldName)->in(\explode(' ', $lowerSearchQuery))
                 );
             }
         }

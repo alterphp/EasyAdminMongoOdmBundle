@@ -13,7 +13,7 @@ use Symfony\Component\Finder\Finder;
 class TemplateConfigPass implements ConfigPassInterface
 {
     private $twigLoader;
-    private $defaultBackendTemplates = array(
+    private $defaultBackendTemplates = [
         'layout' => '@EasyAdminMongoOdm/default/layout.html.twig',
         'menu' => '@EasyAdminMongoOdm/default/menu.html.twig',
         'edit' => '@EasyAdminMongoOdm/default/edit.html.twig',
@@ -56,8 +56,8 @@ class TemplateConfigPass implements ConfigPassInterface
         'label_inaccessible' => '@EasyAdminMongoOdm/default/label_inaccessible.html.twig',
         'label_null' => '@EasyAdminMongoOdm/default/label_null.html.twig',
         'label_undefined' => '@EasyAdminMongoOdm/default/label_undefined.html.twig',
-    );
-    private $existingTemplates = array();
+    ];
+    private $existingTemplates = [];
 
     public function __construct(\Twig_Loader_Filesystem $twigLoader)
     {
@@ -70,7 +70,7 @@ class TemplateConfigPass implements ConfigPassInterface
         $backendConfig = $this->processDefaultTemplates($backendConfig);
         $backendConfig = $this->processFieldTemplates($backendConfig);
 
-        $this->existingTemplates = array();
+        $this->existingTemplates = [];
 
         return $backendConfig;
     }
@@ -94,16 +94,16 @@ class TemplateConfigPass implements ConfigPassInterface
         // 5th level priority: @EasyAdminMongoOdm/default/<templateName>.html.twig
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($this->defaultBackendTemplates as $templateName => $defaultTemplatePath) {
-                $candidateTemplates = array(
+                $candidateTemplates = [
                     isset($documentConfig['templates'][$templateName]) ? $documentConfig['templates'][$templateName] : null,
                     isset($backendConfig['design']['templates'][$templateName]) ? $backendConfig['design']['templates'][$templateName] : null,
                     'easy_admin/'.$documentName.'/'.$templateName.'.html.twig',
                     'easy_admin/'.$templateName.'.html.twig',
-                );
+                ];
                 $templatePath = $this->findFirstExistingTemplate($candidateTemplates) ?: $defaultTemplatePath;
 
                 if (null === $templatePath) {
-                    throw new \RuntimeException(sprintf('None of the templates defined for the "%s" fragment of the "%s" document exists (templates defined: %s).', $templateName, $documentName, implode(', ', $candidateTemplates)));
+                    throw new \RuntimeException(\sprintf('None of the templates defined for the "%s" fragment of the "%s" document exists (templates defined: %s).', $templateName, $documentName, \implode(', ', $candidateTemplates)));
                 }
 
                 $documentConfig['templates'][$templateName] = $templatePath;
@@ -114,7 +114,7 @@ class TemplateConfigPass implements ConfigPassInterface
 
         // second, walk through all document fields to determine their specific template
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            foreach (array('list', 'show') as $view) {
+            foreach (['list', 'show'] as $view) {
                 foreach ($documentConfig[$view]['fields'] as $fieldName => $fieldMetadata) {
                     // if the field defines its own template, resolve its location
                     if (isset($fieldMetadata['template'])) {
@@ -122,20 +122,20 @@ class TemplateConfigPass implements ConfigPassInterface
 
                         // template path should contain the .html.twig extension
                         // however, for usability reasons, we silently fix this issue if needed
-                        if ('.html.twig' !== substr($templatePath, -10)) {
+                        if ('.html.twig' !== \substr($templatePath, -10)) {
                             $templatePath .= '.html.twig';
-                            @trigger_error(sprintf('Passing a template path without the ".html.twig" extension is deprecated since version 1.11.7 and will be removed in 2.0. Use "%s" as the value of the "template" option for the "%s" field in the "%s" view of the "%s" document.', $templatePath, $fieldName, $view, $documentName), E_USER_DEPRECATED);
+                            @\trigger_error(\sprintf('Passing a template path without the ".html.twig" extension is deprecated since version 1.11.7 and will be removed in 2.0. Use "%s" as the value of the "template" option for the "%s" field in the "%s" view of the "%s" document.', $templatePath, $fieldName, $view, $documentName), E_USER_DEPRECATED);
                         }
 
                         // before considering $templatePath a regular Symfony template
                         // path, check if the given template exists in any of these directories:
                         // * app/Resources/views/easy_admin/<documentName>/<templatePath>
                         // * app/Resources/views/easy_admin/<templatePath>
-                        $templatePath = $this->findFirstExistingTemplate(array(
+                        $templatePath = $this->findFirstExistingTemplate([
                             'easy_admin/'.$documentName.'/'.$templatePath,
                             'easy_admin/'.$templatePath,
                             $templatePath,
-                        ));
+                        ]);
                     } else {
                         // At this point, we don't know the exact data type associated with each field.
                         // The template is initialized to null and it will be resolved at runtime in the Configurator class
@@ -169,14 +169,14 @@ class TemplateConfigPass implements ConfigPassInterface
         // 2nd level priority: app/Resources/views/easy_admin/<templateName>.html.twig
         // 3rd level priority: @EasyAdminMongoOdm/default/<templateName>.html.twig
         foreach ($this->defaultBackendTemplates as $templateName => $defaultTemplatePath) {
-            $candidateTemplates = array(
+            $candidateTemplates = [
                 isset($backendConfig['design']['templates'][$templateName]) ? $backendConfig['design']['templates'][$templateName] : null,
                 'easy_admin/'.$templateName.'.html.twig',
-            );
+            ];
             $templatePath = $this->findFirstExistingTemplate($candidateTemplates) ?: $defaultTemplatePath;
 
             if (null === $templatePath) {
-                throw new \RuntimeException(sprintf('None of the templates defined for the global "%s" template of the backend exists (templates defined: %s).', $templateName, implode(', ', $candidateTemplates)));
+                throw new \RuntimeException(\sprintf('None of the templates defined for the global "%s" template of the backend exists (templates defined: %s).', $templateName, \implode(', ', $candidateTemplates)));
             }
 
             $backendConfig['design']['templates'][$templateName] = $templatePath;
@@ -197,7 +197,7 @@ class TemplateConfigPass implements ConfigPassInterface
     private function processFieldTemplates(array $backendConfig)
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            foreach (array('list', 'show') as $view) {
+            foreach (['list', 'show'] as $view) {
                 foreach ($documentConfig[$view]['fields'] as $fieldName => $fieldMetadata) {
                     if (null !== $fieldMetadata['template']) {
                         continue;
@@ -205,8 +205,8 @@ class TemplateConfigPass implements ConfigPassInterface
 
                     // needed to add support for immutable datetime/date/time fields
                     // (which are rendered using the same templates as their non immutable counterparts)
-                    if ('_immutable' === substr($fieldMetadata['dataType'], -10)) {
-                        $fieldTemplateName = 'field_'.substr($fieldMetadata['dataType'], 0, -10);
+                    if ('_immutable' === \substr($fieldMetadata['dataType'], -10)) {
+                        $fieldTemplateName = 'field_'.\substr($fieldMetadata['dataType'], 0, -10);
                     } else {
                         $fieldTemplateName = 'field_'.$fieldMetadata['dataType'];
                     }
@@ -215,7 +215,7 @@ class TemplateConfigPass implements ConfigPassInterface
                     // such as formatting its values as numbers (e.g. `1,234` instead of `1234`)
                     if ($documentConfig['primary_key_field_name'] === $fieldName) {
                         $template = $documentConfig['templates']['field_id'];
-                    } elseif (array_key_exists($fieldTemplateName, $documentConfig['templates'])) {
+                    } elseif (\array_key_exists($fieldTemplateName, $documentConfig['templates'])) {
                         $template = $documentConfig['templates'][$fieldTemplateName];
                     } else {
                         $template = $documentConfig['templates']['label_undefined'];
@@ -235,15 +235,15 @@ class TemplateConfigPass implements ConfigPassInterface
     {
         foreach ($templatePaths as $templatePath) {
             // template name normalization code taken from \Twig_Loader_Filesystem::normalizeName()
-            $templatePath = preg_replace('#/{2,}#', '/', str_replace('\\', '/', $templatePath));
+            $templatePath = \preg_replace('#/{2,}#', '/', \str_replace('\\', '/', $templatePath));
             $namespace = \Twig_Loader_Filesystem::MAIN_NAMESPACE;
 
             if (isset($templatePath[0]) && '@' === $templatePath[0]) {
-                if (false === $pos = strpos($templatePath, '/')) {
-                    throw new \LogicException(sprintf('Malformed namespaced template name "%s" (expecting "@namespace/template_name").', $templatePath));
+                if (false === $pos = \strpos($templatePath, '/')) {
+                    throw new \LogicException(\sprintf('Malformed namespaced template name "%s" (expecting "@namespace/template_name").', $templatePath));
                 }
 
-                $namespace = substr($templatePath, 1, $pos - 1);
+                $namespace = \substr($templatePath, 1, $pos - 1);
             }
 
             if (!isset($this->existingTemplates[$namespace])) {
@@ -255,11 +255,11 @@ class TemplateConfigPass implements ConfigPassInterface
                         $template = $templateFile->getRelativePathname();
 
                         if ('\\' === DIRECTORY_SEPARATOR) {
-                            $template = str_replace('\\', '/', $template);
+                            $template = \str_replace('\\', '/', $template);
                         }
 
                         if (\Twig_Loader_Filesystem::MAIN_NAMESPACE !== $namespace) {
-                            $template = sprintf('@%s/%s', $namespace, $template);
+                            $template = \sprintf('@%s/%s', $namespace, $template);
                         }
                         $this->existingTemplates[$namespace][$template] = true;
                     }

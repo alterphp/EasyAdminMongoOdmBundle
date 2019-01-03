@@ -27,11 +27,11 @@ class MetadataConfigPass implements ConfigPassInterface
             try {
                 $em = $this->doctrine->getManagerForClass($documentConfig['class']);
             } catch (\ReflectionException $e) {
-                throw new InvalidTypeException(sprintf('The configured class "%s" for the path "easy_admin_mongo_odm.documents.%s" does not exist. Did you forget to create the document class or to define its namespace?', $documentConfig['class'], $documentName));
+                throw new InvalidTypeException(\sprintf('The configured class "%s" for the path "easy_admin_mongo_odm.documents.%s" does not exist. Did you forget to create the document class or to define its namespace?', $documentConfig['class'], $documentName));
             }
 
             if (null === $em) {
-                throw new InvalidTypeException(sprintf('The configured class "%s" for the path "easy_admin_mongo_odm.documents.%s" is no mapped document.', $documentConfig['class'], $documentName));
+                throw new InvalidTypeException(\sprintf('The configured class "%s" for the path "easy_admin_mongo_odm.documents.%s" is no mapped document.', $documentConfig['class'], $documentName));
             }
 
             $documentMetadata = $em->getMetadataFactory()->getMetadataFor($documentConfig['class']);
@@ -56,32 +56,32 @@ class MetadataConfigPass implements ConfigPassInterface
      */
     private function processDocumentPropertiesMetadata(ClassMetadata $documentMetadata)
     {
-        $documentPropertiesMetadata = array();
+        $documentPropertiesMetadata = [];
 
         // SORT_ONLY_INDEXES
         $singleIndexes = $documentMetadata->getIdentifierFieldNames();
-        $singleIndexes = array_filter(array_merge($singleIndexes, array_map(function ($idx) {
-            if (1 === count($idx['keys'])) {
-                $indexes = array_keys($idx['keys']);
+        $singleIndexes = \array_filter(\array_merge($singleIndexes, \array_map(function ($idx) {
+            if (1 === \count($idx['keys'])) {
+                $indexes = \array_keys($idx['keys']);
 
-                return reset($indexes);
+                return \reset($indexes);
             }
         }, $documentMetadata->getIndexes())));
 
         // introspect regular document fields
         foreach ($documentMetadata->fieldMappings as $fieldName => $fieldMetadata) {
-            $documentPropertiesMetadata[$fieldName] = array_merge($fieldMetadata, array(
+            $documentPropertiesMetadata[$fieldName] = \array_merge($fieldMetadata, [
                 // SORT_ONLY_INDEXES
-                'sortable' => in_array($fieldName, $singleIndexes),
-            ));
+                'sortable' => \in_array($fieldName, $singleIndexes),
+            ]);
         }
 
         // introspect fields for document associations
         foreach ($documentMetadata->associationMappings as $fieldName => $associationMetadata) {
-            $documentPropertiesMetadata[$fieldName] = array_merge($associationMetadata, array(
+            $documentPropertiesMetadata[$fieldName] = \array_merge($associationMetadata, [
                 'type' => 'association',
                 'associationType' => $associationMetadata['type'],
-            ));
+            ]);
 
             // associations different from *-to-one cannot be sorted
             if (ClassMetadata::MANY === $associationMetadata['type']) {

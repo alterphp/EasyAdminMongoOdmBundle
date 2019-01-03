@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('documents')
                     ->normalizeKeys(false)
                     ->useAttributeAsKey('name', false)
-                    ->defaultValue(array())
+                    ->defaultValue([])
                     ->info('The list of documents to manage in the administration zone.')
                     ->prototype('variable')
                 ->end()

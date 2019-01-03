@@ -13,16 +13,16 @@ class NormalizerConfigPass implements ConfigPassInterface
 {
     // USE_MAIN_CONFIG
     private $easyAdminBackendConfig;
-    private $defaultViewConfig = array(
-        'list' => array(
-            'fields' => array(),
-        ),
-        'search' => array(
-            'fields' => array(),
-        ),
-        'show' => array(
-            'fields' => array(),
-        ),
+    private $defaultViewConfig = [
+        'list' => [
+            'fields' => [],
+        ],
+        'search' => [
+            'fields' => [],
+        ],
+        'show' => [
+            'fields' => [],
+        ],
         /* RESTRICTED_ACTION
         'form' => array(
             'fields' => array(),
@@ -37,7 +37,7 @@ class NormalizerConfigPass implements ConfigPassInterface
             'form_options' => array(),
         ),
         */
-    );
+    ];
 
     /** @var ContainerInterface */
     private $container;
@@ -98,10 +98,10 @@ class NormalizerConfigPass implements ConfigPassInterface
     private function normalizeViewConfig(array $backendConfig)
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            foreach (array_keys($this->defaultViewConfig) as $view) {
-                $documentConfig[$view] = array_replace_recursive(
+            foreach (\array_keys($this->defaultViewConfig) as $view) {
+                $documentConfig[$view] = \array_replace_recursive(
                     $this->defaultViewConfig[$view],
-                    isset($documentConfig[$view]) ? $documentConfig[$view] : array()
+                    isset($documentConfig[$view]) ? $documentConfig[$view] : []
                 );
             }
 
@@ -139,21 +139,21 @@ class NormalizerConfigPass implements ConfigPassInterface
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             $designElementIndex = 0;
-            foreach (array_keys($this->defaultViewConfig) as $view) {
-                $fields = array();
+            foreach (\array_keys($this->defaultViewConfig) as $view) {
+                $fields = [];
                 foreach ($documentConfig[$view]['fields'] as $i => $field) {
-                    if (!is_string($field) && !is_array($field)) {
-                        throw new \RuntimeException(sprintf('The values of the "fields" option for the "%s" view of the "%s" document can only be strings or arrays.', $view, $documentConfig['class']));
+                    if (!\is_string($field) && !\is_array($field)) {
+                        throw new \RuntimeException(\sprintf('The values of the "fields" option for the "%s" view of the "%s" document can only be strings or arrays.', $view, $documentConfig['class']));
                     }
 
-                    if (is_string($field)) {
+                    if (\is_string($field)) {
                         // Config format #1: field is just a string representing the document property
-                        $fieldConfig = array('property' => $field);
+                        $fieldConfig = ['property' => $field];
                     } else {
                         // Config format #1: field is an array that defines one or more
                         // options. Check that either 'property' or 'type' option is set
-                        if (!array_key_exists('property', $field) && !array_key_exists('type', $field)) {
-                            throw new \RuntimeException(sprintf('One of the values of the "fields" option for the "%s" view of the "%s" document does not define neither of the mandatory options ("property" or "type").', $view, $documentConfig['class']));
+                        if (!\array_key_exists('property', $field) && !\array_key_exists('type', $field)) {
+                            throw new \RuntimeException(\sprintf('One of the values of the "fields" option for the "%s" view of the "%s" document does not define neither of the mandatory options ("property" or "type").', $view, $documentConfig['class']));
                         }
 
                         $fieldConfig = $field;
@@ -190,16 +190,16 @@ class NormalizerConfigPass implements ConfigPassInterface
 
     private function normalizeActionConfig(array $backendConfig)
     {
-        $views = array_diff(array_keys($this->defaultViewConfig), array('search'));
+        $views = \array_diff(\array_keys($this->defaultViewConfig), ['search']);
 
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($views as $view) {
                 if (!isset($documentConfig[$view]['actions'])) {
-                    $backendConfig['documents'][$documentName][$view]['actions'] = array();
+                    $backendConfig['documents'][$documentName][$view]['actions'] = [];
                 }
 
-                if (!is_array($backendConfig['documents'][$documentName][$view]['actions'])) {
-                    throw new \InvalidArgumentException(sprintf('The "actions" configuration for the "%s" view of the "%s" document must be an array (a string was provided).', $view, $documentName));
+                if (!\is_array($backendConfig['documents'][$documentName][$view]['actions'])) {
+                    throw new \InvalidArgumentException(\sprintf('The "actions" configuration for the "%s" view of the "%s" document must be an array (a string was provided).', $view, $documentName));
                 }
             }
         }
@@ -220,10 +220,10 @@ class NormalizerConfigPass implements ConfigPassInterface
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             if (isset($documentConfig['controller'])) {
-                $controller = trim($documentConfig['controller']);
+                $controller = \trim($documentConfig['controller']);
 
-                if (!$this->container->has($controller) && !class_exists($controller)) {
-                    throw new \InvalidArgumentException(sprintf('The "%s" value defined in the "controller" option of the "%s" document is not a valid controller. For a regular controller, set its FQCN as the value; for a controller defined as service, set its service name as the value.', $controller, $documentName));
+                if (!$this->container->has($controller) && !\class_exists($controller)) {
+                    throw new \InvalidArgumentException(\sprintf('The "%s" value defined in the "controller" option of the "%s" document is not a valid controller. For a regular controller, set its FQCN as the value; for a controller defined as service, set its service name as the value.', $controller, $documentName));
                 }
 
                 $backendConfig['documents'][$documentName]['controller'] = $controller;
@@ -241,7 +241,7 @@ class NormalizerConfigPass implements ConfigPassInterface
             }
 
             if ('' === $documentConfig['translation_domain']) {
-                throw new \InvalidArgumentException(sprintf('The value defined in the "translation_domain" option of the "%s" document is not a valid translation domain name (use false to disable translations).', $documentName));
+                throw new \InvalidArgumentException(\sprintf('The value defined in the "translation_domain" option of the "%s" document is not a valid translation domain name (use false to disable translations).', $documentName));
             }
 
             $backendConfig['documents'][$documentName] = $documentConfig;
@@ -250,7 +250,7 @@ class NormalizerConfigPass implements ConfigPassInterface
         return $backendConfig;
     }
 
-    /**
+    /*
      * Normalizes the configuration of the special elements that forms may include
      * to create advanced designs (such as dividers and fieldsets).
      *
@@ -343,7 +343,7 @@ class NormalizerConfigPass implements ConfigPassInterface
         return $backendConfig;
     }*/
 
-    /**
+    /*
      * Process the configuration of the 'form' view (if any) to complete the
      * configuration of the 'edit' and 'new' views.
      *
@@ -366,7 +366,7 @@ class NormalizerConfigPass implements ConfigPassInterface
         return $backendConfig;
     }*/
 
-    /**
+    /*
      * Merges the form configuration recursively from the 'form' view to the
      * 'edit' and 'new' views. It processes the configuration of the form fields
      * in a special way to keep all their configuration and allow overriding and
@@ -422,7 +422,7 @@ class NormalizerConfigPass implements ConfigPassInterface
         return $mergedConfig;
     }*/
 
-    /**
+    /*
      * The 'edit' and 'new' views can remove fields defined in the 'form' view
      * by defining fields with a '-' dash at the beginning of its name (e.g.
      * { property: '-name' } to remove the 'name' property).

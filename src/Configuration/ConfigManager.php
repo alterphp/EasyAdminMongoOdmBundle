@@ -18,7 +18,7 @@ class ConfigManager
     /** @var array */
     private $originalOdmBackendConfig;
     /** @var ConfigPassInterface[] */
-    private $odmConfigPasses = array();
+    private $odmConfigPasses = [];
     /** @var bool */
     private $debug;
 
@@ -62,7 +62,7 @@ class ConfigManager
         }
 
         // turns 'design.menu' into '[design][menu]', the format required by PropertyAccess
-        $propertyPath = '['.str_replace('.', '][', $propertyPath).']';
+        $propertyPath = '['.\str_replace('.', '][', $propertyPath).']';
 
         return $this->propertyAccessor->getValue($this->odmBackendConfig, $propertyPath);
     }
@@ -96,7 +96,7 @@ class ConfigManager
     {
         $odmBackendConfig = $this->getBackendConfig();
         if (!isset($odmBackendConfig['documents'][$documentName])) {
-            throw new UndefinedDocumentException(array('document_name' => $documentName));
+            throw new UndefinedDocumentException(['document_name' => $documentName]);
         }
 
         return $odmBackendConfig['documents'][$documentName];
@@ -133,10 +133,10 @@ class ConfigManager
         try {
             $documentConfig = $this->getDocumentConfig($documentName);
         } catch (\Exception $e) {
-            $documentConfig = array();
+            $documentConfig = [];
         }
 
-        return isset($documentConfig[$view]['actions'][$action]) ? $documentConfig[$view]['actions'][$action] : array();
+        return isset($documentConfig[$view]['actions'][$action]) ? $documentConfig[$view]['actions'][$action] : [];
     }
 
     /**
@@ -153,7 +153,7 @@ class ConfigManager
     {
         $documentConfig = $this->getDocumentConfig($documentName);
 
-        return !in_array($action, $documentConfig['disabled_actions']) && array_key_exists($action, $documentConfig[$view]['actions']);
+        return !\in_array($action, $documentConfig['disabled_actions']) && \array_key_exists($action, $documentConfig[$view]['actions']);
     }
 
     /**

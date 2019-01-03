@@ -30,20 +30,20 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_config', array($this, 'getBackendConfiguration')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_document', array($this, 'getDocumentConfiguration')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled_for_*_view', array($this, 'isActionEnabled')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled', array($this, 'isActionEnabled')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action', array($this, 'getActionConfiguration')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action_for_*_view', array($this, 'getActionConfiguration')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_actions_for_*_item', array($this, 'getActionsForItem')),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_render_field_for_*_view', array($this, 'renderDocumentField'), array('is_safe' => array('html'), 'needs_environment' => true)),
+        return [
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_config', [$this, 'getBackendConfiguration']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_document', [$this, 'getDocumentConfiguration']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled_for_*_view', [$this, 'isActionEnabled']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled', [$this, 'isActionEnabled']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action', [$this, 'getActionConfiguration']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action_for_*_view', [$this, 'getActionConfiguration']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_actions_for_*_item', [$this, 'getActionsForItem']),
+            new \Twig_SimpleFunction('easyadmin_mongo_odm_render_field_for_*_view', [$this, 'renderDocumentField'], ['is_safe' => ['html'], 'needs_environment' => true]),
 
             /*
             new \Twig_SimpleFunction('easyadmin_path', array($this, 'getDocumentPath')),
             */
-        );
+        ];
     }
 
     /**
@@ -117,22 +117,22 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
         try {
             $documentConfig = $this->configManager->getDocumentConfig($documentName);
         } catch (\Exception $e) {
-            return array();
+            return [];
         }
 
         $disabledActions = $documentConfig['disabled_actions'];
         $viewActions = $documentConfig[$view]['actions'];
 
-        $actionsExcludedForItems = array(
-            'list' => array('new', 'search'),
-            'edit' => array(),
-            'new' => array(),
-            'show' => array(),
-        );
+        $actionsExcludedForItems = [
+            'list' => ['new', 'search'],
+            'edit' => [],
+            'new' => [],
+            'show' => [],
+        ];
         $excludedActions = $actionsExcludedForItems[$view];
 
-        return array_filter($viewActions, function ($action) use ($excludedActions, $disabledActions) {
-            return !in_array($action['name'], $excludedActions) && !in_array($action['name'], $disabledActions);
+        return \array_filter($viewActions, function ($action) use ($excludedActions, $disabledActions) {
+            return !\in_array($action['name'], $excludedActions) && !\in_array($action['name'], $disabledActions);
         });
     }
 
@@ -155,8 +155,8 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
     public function renderDocumentField(\Twig_Environment $twig, $view, $documentName, $item, array $fieldMetadata)
     {
         $documentConfiguration = $this->configManager->getDocumentConfig($documentName);
-        $hasCustomTemplate = 0 !== strpos($fieldMetadata['template'], '@EasyAdminMongoOdm/');
-        $templateParameters = array();
+        $hasCustomTemplate = 0 !== \strpos($fieldMetadata['template'], '@EasyAdminMongoOdm/');
+        $templateParameters = [];
 
         try {
             $templateParameters = $this->getTemplateParameters($documentName, $view, $fieldMetadata, $item);
@@ -174,7 +174,7 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
                 return $twig->render($documentConfiguration['templates']['label_null'], $templateParameters);
             }
 
-            if (empty($templateParameters['value']) && in_array($fieldMetadata['dataType'], array('image', 'file', 'array', 'simple_array'))) {
+            if (empty($templateParameters['value']) && \in_array($fieldMetadata['dataType'], ['image', 'file', 'array', 'simple_array'])) {
                 return $twig->render($templateParameters['document_config']['templates']['label_empty'], $templateParameters);
             }
 
@@ -193,13 +193,13 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
         $fieldName = $fieldMetadata['property'];
         $fieldType = $fieldMetadata['dataType'];
 
-        $parameters = array(
+        $parameters = [
             'backend_config' => $this->getBackendConfiguration(),
             'document_config' => $this->configManager->getDocumentConfig($documentName),
             'field_options' => $fieldMetadata,
             'item' => $item,
             'view' => $view,
-        );
+        ];
 
         // the try..catch block is required because we can't use
         // $propertyAccessor->isReadable(), which is unavailable in Symfony 2.3
@@ -235,7 +235,7 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
         return $parameters;
     }
 
-    /**
+    /*
      * @param object|string $document
      * @param string        $action
      * @param array         $parameters

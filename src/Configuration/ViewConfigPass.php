@@ -12,7 +12,7 @@ class ViewConfigPass implements ConfigPassInterface
 {
     // USE_MAIN_CONFIG
     private $easyAdminBackendConfig;
-    private $views = array('list', 'search', 'show'); // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show');
+    private $views = ['list', 'search', 'show']; // RESTRICTED_ACTIONS array('edit', 'list', 'new', 'search', 'show');
 
     public function __construct(array $easyAdminBackendConfig)
     {
@@ -37,11 +37,11 @@ class ViewConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($this->views as $view) {
                 // isset() cannot be used because the value can be 'null' (used to remove the inherited help message)
-                if (array_key_exists('help', $backendConfig['documents'][$documentName][$view])) {
+                if (\array_key_exists('help', $backendConfig['documents'][$documentName][$view])) {
                     continue;
                 }
 
-                $backendConfig['documents'][$documentName][$view]['help'] = array_key_exists('help', $documentConfig) ? $documentConfig['help'] : null;
+                $backendConfig['documents'][$documentName][$view]['help'] = \array_key_exists('help', $documentConfig) ? $documentConfig['help'] : null;
             }
         }
 
@@ -61,7 +61,7 @@ class ViewConfigPass implements ConfigPassInterface
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($this->views as $view) {
-                if (0 === count($documentConfig[$view]['fields'])) {
+                if (0 === \count($documentConfig[$view]['fields'])) {
                     $fieldsConfig = $this->filterFieldList(
                         $documentConfig['properties'],
                         $this->getExcludedFieldNames($view, $documentConfig),
@@ -147,7 +147,7 @@ class ViewConfigPass implements ConfigPassInterface
     private function processMaxResultsConfig(array $backendConfig)
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            foreach (array('list', 'search', 'show') as $view) {
+            foreach (['list', 'search', 'show'] as $view) {
                 if (!isset($documentConfig[$view]['max_results']) && isset($this->easyAdminBackendConfig[$view]['max_results'])) {
                     $backendConfig['documents'][$documentName][$view]['max_results'] = $this->easyAdminBackendConfig[$view]['max_results'];
                 }
@@ -169,42 +169,42 @@ class ViewConfigPass implements ConfigPassInterface
     private function processSortingConfig(array $backendConfig)
     {
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            foreach (array('list', 'search') as $view) {
+            foreach (['list', 'search'] as $view) {
                 if (!isset($documentConfig[$view]['sort'])) {
                     continue;
                 }
 
                 $sortConfig = $documentConfig[$view]['sort'];
-                if (!is_string($sortConfig) && !is_array($sortConfig)) {
-                    throw new \InvalidArgumentException(sprintf('The "sort" option of the "%s" view of the "%s" document contains an invalid value (it can only be a string or an array).', $view, $documentName));
+                if (!\is_string($sortConfig) && !\is_array($sortConfig)) {
+                    throw new \InvalidArgumentException(\sprintf('The "sort" option of the "%s" view of the "%s" document contains an invalid value (it can only be a string or an array).', $view, $documentName));
                 }
 
-                if (is_string($sortConfig)) {
-                    $sortConfig = array('field' => $sortConfig, 'direction' => 'DESC');
+                if (\is_string($sortConfig)) {
+                    $sortConfig = ['field' => $sortConfig, 'direction' => 'DESC'];
                 } else {
-                    $sortConfig = array('field' => $sortConfig[0], 'direction' => strtoupper($sortConfig[1]));
+                    $sortConfig = ['field' => $sortConfig[0], 'direction' => \strtoupper($sortConfig[1])];
                 }
 
-                if (!in_array($sortConfig['direction'], array('ASC', 'DESC'))) {
-                    throw new \InvalidArgumentException(sprintf('If defined, the second value of the "sort" option of the "%s" view of the "%s" document can only be "ASC" or "DESC".', $view, $documentName));
+                if (!\in_array($sortConfig['direction'], ['ASC', 'DESC'])) {
+                    throw new \InvalidArgumentException(\sprintf('If defined, the second value of the "sort" option of the "%s" view of the "%s" document can only be "ASC" or "DESC".', $view, $documentName));
                 }
 
-                $isSortedByDoctrineAssociation = false !== strpos($sortConfig['field'], '.');
+                $isSortedByDoctrineAssociation = false !== \strpos($sortConfig['field'], '.');
                 if (!$isSortedByDoctrineAssociation && (isset($documentConfig[$view]['fields'][$sortConfig['field']]) && true === $documentConfig[$view]['fields'][$sortConfig['field']]['virtual'])) {
-                    throw new \InvalidArgumentException(sprintf('The "%s" field cannot be used in the "sort" option of the "%s" view of the "%s" document because it\'s a virtual property that is not persisted in the database.', $sortConfig['field'], $view, $documentName));
+                    throw new \InvalidArgumentException(\sprintf('The "%s" field cannot be used in the "sort" option of the "%s" view of the "%s" document because it\'s a virtual property that is not persisted in the database.', $sortConfig['field'], $view, $documentName));
                 }
 
                 // sort can be defined using simple properties (sort: author) or association properties (sort: author.name)
-                if (substr_count($sortConfig['field'], '.') > 1) {
-                    throw new \InvalidArgumentException(sprintf('The "%s" value cannot be used as the "sort" option in the "%s" view of the "%s" document because it defines multiple sorting levels (e.g. "aaa.bbb.ccc") but only up to one level is supported (e.g. "aaa.bbb").', $sortConfig['field'], $view, $documentName));
+                if (\substr_count($sortConfig['field'], '.') > 1) {
+                    throw new \InvalidArgumentException(\sprintf('The "%s" value cannot be used as the "sort" option in the "%s" view of the "%s" document because it defines multiple sorting levels (e.g. "aaa.bbb.ccc") but only up to one level is supported (e.g. "aaa.bbb").', $sortConfig['field'], $view, $documentName));
                 }
 
                 // sort field can be a Doctrine association (sort: author.name) instead of a simple property
-                $sortFieldParts = explode('.', $sortConfig['field']);
+                $sortFieldParts = \explode('.', $sortConfig['field']);
                 $sortFieldProperty = $sortFieldParts[0];
 
-                if (!array_key_exists($sortFieldProperty, $documentConfig['properties']) && !isset($documentConfig[$view]['fields'][$sortFieldProperty])) {
-                    throw new \InvalidArgumentException(sprintf('The "%s" field used in the "sort" option of the "%s" view of the "%s" document does not exist neither as a property of that document nor as a virtual field of that view.', $sortFieldProperty, $view, $documentName));
+                if (!\array_key_exists($sortFieldProperty, $documentConfig['properties']) && !isset($documentConfig[$view]['fields'][$sortFieldProperty])) {
+                    throw new \InvalidArgumentException(\sprintf('The "%s" field used in the "sort" option of the "%s" view of the "%s" document does not exist neither as a property of that document nor as a virtual field of that view.', $sortFieldProperty, $view, $documentName));
                 }
 
                 $backendConfig['documents'][$documentName][$view]['sort'] = $sortConfig;
@@ -225,15 +225,15 @@ class ViewConfigPass implements ConfigPassInterface
      */
     private function getFieldFormat($fieldType, array $backendConfig)
     {
-        if (in_array($fieldType, array('date', 'date_immutable', 'time', 'time_immutable', 'datetime', 'datetime_immutable', 'datetimetz'))) {
+        if (\in_array($fieldType, ['date', 'date_immutable', 'time', 'time_immutable', 'datetime', 'datetime_immutable', 'datetimetz'])) {
             // make 'datetimetz' use the same format as 'datetime'
             $fieldType = ('datetimetz' === $fieldType) ? 'datetime' : $fieldType;
-            $fieldType = ('_immutable' === substr($fieldType, -10)) ? substr($fieldType, 0, -10) : $fieldType;
+            $fieldType = ('_immutable' === \substr($fieldType, -10)) ? \substr($fieldType, 0, -10) : $fieldType;
 
             return $this->easyAdminBackendConfig['formats'][$fieldType];
         }
 
-        if (in_array($fieldType, array('bigint', 'integer', 'smallint', 'decimal', 'float'))) {
+        if (\in_array($fieldType, ['bigint', 'integer', 'smallint', 'decimal', 'float'])) {
             return isset($this->easyAdminBackendConfig['formats']['number']) ? $this->easyAdminBackendConfig['formats']['number'] : null;
         }
     }
@@ -248,15 +248,15 @@ class ViewConfigPass implements ConfigPassInterface
      */
     private function getExcludedFieldNames($view, array $documentConfig)
     {
-        $excludedFieldNames = array(
-            'edit' => array($documentConfig['primary_key_field_name']),
-            'list' => array('password', 'salt', 'slug', 'updatedAt', 'uuid'),
-            'new' => array($documentConfig['primary_key_field_name']),
-            'search' => array('password', 'salt'),
-            'show' => array(),
-        );
+        $excludedFieldNames = [
+            'edit' => [$documentConfig['primary_key_field_name']],
+            'list' => ['password', 'salt', 'slug', 'updatedAt', 'uuid'],
+            'new' => [$documentConfig['primary_key_field_name']],
+            'search' => ['password', 'salt'],
+            'show' => [],
+        ];
 
-        return isset($excludedFieldNames[$view]) ? $excludedFieldNames[$view] : array();
+        return isset($excludedFieldNames[$view]) ? $excludedFieldNames[$view] : [];
     }
 
     /**
@@ -268,15 +268,15 @@ class ViewConfigPass implements ConfigPassInterface
      */
     private function getExcludedFieldTypes($view)
     {
-        $excludedFieldTypes = array(
-            'edit' => array('binary', 'blob', 'json_array', 'json', 'object'),
-            'list' => array('array', 'binary', 'blob', 'guid', 'json_array', 'json', 'object', 'simple_array', 'text'),
-            'new' => array('binary', 'blob', 'json_array', 'json', 'object'),
-            'search' => array('association', 'binary', 'boolean', 'blob', 'date', 'date_immutable', 'datetime', 'datetime_immutable', 'datetimetz', 'time', 'time_immutable', 'object'),
-            'show' => array(),
-        );
+        $excludedFieldTypes = [
+            'edit' => ['binary', 'blob', 'json_array', 'json', 'object'],
+            'list' => ['array', 'binary', 'blob', 'guid', 'json_array', 'json', 'object', 'simple_array', 'text'],
+            'new' => ['binary', 'blob', 'json_array', 'json', 'object'],
+            'search' => ['association', 'binary', 'boolean', 'blob', 'date', 'date_immutable', 'datetime', 'datetime_immutable', 'datetimetz', 'time', 'time_immutable', 'object'],
+            'show' => [],
+        ];
 
-        return isset($excludedFieldTypes[$view]) ? $excludedFieldTypes[$view] : array();
+        return isset($excludedFieldTypes[$view]) ? $excludedFieldTypes[$view] : [];
     }
 
     /**
@@ -289,9 +289,9 @@ class ViewConfigPass implements ConfigPassInterface
      */
     private function getMaxNumberFields($view)
     {
-        $maxNumberFields = array(
+        $maxNumberFields = [
             'list' => 7,
-        );
+        ];
 
         return isset($maxNumberFields[$view]) ? $maxNumberFields[$view] : PHP_INT_MAX;
     }
@@ -308,16 +308,16 @@ class ViewConfigPass implements ConfigPassInterface
      */
     private function filterFieldList(array $fields, array $excludedFieldNames, array $excludedFieldTypes, $maxNumFields)
     {
-        $filteredFields = array();
+        $filteredFields = [];
 
         foreach ($fields as $name => $metadata) {
-            if (!in_array($name, $excludedFieldNames) && !in_array($metadata['type'], $excludedFieldTypes)) {
+            if (!\in_array($name, $excludedFieldNames) && !\in_array($metadata['type'], $excludedFieldTypes)) {
                 $filteredFields[$name] = $fields[$name];
             }
         }
 
-        if (count($filteredFields) > $maxNumFields) {
-            $filteredFields = array_slice($filteredFields, 0, $maxNumFields, true);
+        if (\count($filteredFields) > $maxNumFields) {
+            $filteredFields = \array_slice($filteredFields, 0, $maxNumFields, true);
         }
 
         return $filteredFields;

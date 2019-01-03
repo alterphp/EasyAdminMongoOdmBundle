@@ -49,11 +49,11 @@ class RequestPostInitializeListener
             return;
         }
 
-        $this->request->attributes->set('easyadmin_mongo_odm', array(
+        $this->request->attributes->set('easyadmin_mongo_odm', [
             'document' => $document = $event->getArgument('document'),
             'view' => $this->request->query->get('action', 'list'),
             'item' => ($id = $this->request->query->get('id')) ? $this->findCurrentItem($document, $id) : null,
-        ));
+        ]);
     }
 
     /**
@@ -69,11 +69,11 @@ class RequestPostInitializeListener
     private function findCurrentItem(array $documentConfig, $itemId)
     {
         if (null === $manager = $this->doctrine->getManagerForClass($documentConfig['class'])) {
-            throw new \RuntimeException(sprintf('There is no Doctrine Document Manager defined for the "%s" class', $documentConfig['class']));
+            throw new \RuntimeException(\sprintf('There is no Doctrine Document Manager defined for the "%s" class', $documentConfig['class']));
         }
 
         if (null === $document = $manager->getRepository($documentConfig['class'])->find($itemId)) {
-            throw new DocumentNotFoundException(array('document_name' => $documentConfig['name'], 'document_id_name' => $documentConfig['primary_key_field_name'], 'document_id_value' => $itemId));
+            throw new DocumentNotFoundException(['document_name' => $documentConfig['name'], 'document_id_name' => $documentConfig['primary_key_field_name'], 'document_id_value' => $itemId]);
         }
 
         return $document;

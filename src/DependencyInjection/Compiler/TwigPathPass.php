@@ -2,7 +2,6 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\DependencyInjection\Compiler;
 
-use AlterPHP\EasyAdminMongoOdmBundle\EasyAdminMongoOdmBundle;
 use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,17 +15,17 @@ class TwigPathPass implements CompilerPassInterface
 
         $easyAdminBundleRefl = new \ReflectionClass(EasyAdminBundle::class);
         if ($easyAdminBundleRefl->isUserDefined()) {
-            $nativeEasyAdminBundlePath = dirname((string) $easyAdminBundleRefl->getFileName());
+            $nativeEasyAdminBundlePath = \dirname((string) $easyAdminBundleRefl->getFileName());
             $nativeEasyAdminTwigPath = $nativeEasyAdminBundlePath.'/Resources/views';
             // Defines a namespace from native EasyAdmin templates
             $twigLoaderFilesystemDefinition->addMethodCall(
                 'addPath',
-                array($nativeEasyAdminTwigPath, 'EasyAdminMongoOdm')
+                [$nativeEasyAdminTwigPath, 'EasyAdminMongoOdm']
             );
             // Base prefixed NS for original bundle
             $twigLoaderFilesystemDefinition->addMethodCall(
                 'addPath',
-                array($nativeEasyAdminTwigPath, 'BaseEasyAdmin')
+                [$nativeEasyAdminTwigPath, 'BaseEasyAdmin']
             );
         }
     }

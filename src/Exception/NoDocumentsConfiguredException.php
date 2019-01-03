@@ -7,7 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Exception\ExceptionContext;
 
 class NoDocumentsConfiguredException extends BaseException
 {
-    public function __construct(array $parameters = array())
+    public function __construct(array $parameters = [])
     {
         $exceptionContext = new ExceptionContext(
             'exception.no_documents_configured',

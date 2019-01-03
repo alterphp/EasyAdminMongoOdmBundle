@@ -52,11 +52,11 @@ class EasyAdminMongoOdmExtension extends Extension
      */
     private function processConfigFiles(array $configs)
     {
-        $existingDocumentNames = array();
+        $existingDocumentNames = [];
 
         foreach ($configs as $i => $config) {
-            if (array_key_exists('documents', $config)) {
-                $processedConfig = array();
+            if (\array_key_exists('documents', $config)) {
+                $processedConfig = [];
 
                 foreach ($config['documents'] as $key => $value) {
                     $documentConfig = $this->normalizeDocumentConfig($key, $value);
@@ -110,13 +110,13 @@ class EasyAdminMongoOdmExtension extends Extension
     private function normalizeDocumentConfig($documentName, $documentConfig)
     {
         // normalize config formats #1 and #2 to use the 'class' option as config format #3
-        if (!is_array($documentConfig)) {
-            $documentConfig = array('class' => $documentConfig);
+        if (!\is_array($documentConfig)) {
+            $documentConfig = ['class' => $documentConfig];
         }
 
         // if config format #3 is used, ensure that it defines the 'class' option
         if (!isset($documentConfig['class'])) {
-            throw new \RuntimeException(sprintf('The "%s" document must define its associated Doctrine document class using the "class" option.', $documentName));
+            throw new \RuntimeException(\sprintf('The "%s" document must define its associated Doctrine document class using the "class" option.', $documentName));
         }
 
         return $documentConfig;
@@ -141,14 +141,14 @@ class EasyAdminMongoOdmExtension extends Extension
     private function getUniqueDocumentName($documentName, array $documentConfig, array $existingDocumentNames)
     {
         // the shortcut config syntax doesn't require to give documents a name
-        if (is_numeric($documentName)) {
-            $documentClassParts = explode('\\', $documentConfig['class']);
-            $documentName = end($documentClassParts);
+        if (\is_numeric($documentName)) {
+            $documentClassParts = \explode('\\', $documentConfig['class']);
+            $documentName = \end($documentClassParts);
         }
 
         $i = 2;
         $uniqueName = $documentName;
-        while (in_array($uniqueName, $existingDocumentNames)) {
+        while (\in_array($uniqueName, $existingDocumentNames)) {
             $uniqueName = $documentName.($i++);
         }
 
@@ -157,7 +157,7 @@ class EasyAdminMongoOdmExtension extends Extension
         // make sure that the document name is valid as a PHP method name
         // (this is required to allow extending the backend with a custom controller)
         if (!$this->isValidMethodName($documentName)) {
-            throw new \InvalidArgumentException(sprintf('The name of the "%s" document contains invalid characters (allowed: letters, numbers, underscores; the first character cannot be a number).', $documentName));
+            throw new \InvalidArgumentException(\sprintf('The name of the "%s" document contains invalid characters (allowed: letters, numbers, underscores; the first character cannot be a number).', $documentName));
         }
 
         return $documentName;
@@ -172,6 +172,6 @@ class EasyAdminMongoOdmExtension extends Extension
      */
     private function isValidMethodName($name)
     {
-        return 0 !== preg_match('/^-?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name);
+        return 0 !== \preg_match('/^-?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name);
     }
 }
