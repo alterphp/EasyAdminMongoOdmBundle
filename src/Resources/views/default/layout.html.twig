@@ -16,10 +16,8 @@
 
 {% block content_help %}
   {% if _document_config is defined and _document_config[app.request.query.get('action')]['help']|default(false) %}
-    <div class="box box-widget help-entity">
-      <div class="box-body">
-        {{ _document_config[app.request.query.get('action')]['help']|trans|raw }}
-      </div>
+    <div class="content-header-help">
+      {{ _document_config[app.request.query.get('action')]['help']|trans(domain = _document_config.translation_domain)|raw }}
     </div>
   {% endif %}
 {% endblock content_help %}
