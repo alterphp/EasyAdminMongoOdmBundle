@@ -18,10 +18,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('easy_admin_mongo_odm');
+        $treeBuilder = new TreeBuilder('easy_admin_mongo_odm');
 
-        $this->addDocumentsSection($rootNode);
+        $this->addDocumentsSection($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
