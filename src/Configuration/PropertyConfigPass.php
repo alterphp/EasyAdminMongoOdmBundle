@@ -3,7 +3,7 @@
 namespace AlterPHP\EasyAdminMongoOdmBundle\Configuration;
 
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Form\Util\LegacyFormHelper;
+use EasyCorp\Bundle\EasyAdminBundle\Form\Util\FormTypeHelper;
 use Symfony\Component\Form\FormRegistryInterface;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
@@ -96,7 +96,7 @@ class PropertyConfigPass implements ConfigPassInterface
                 $requiredGuess = $this->getFormRequiredGuessOfProperty($documentConfig['class'], $propertyName);
 
                 $guessedType = null !== $typeGuess
-                    ? LegacyFormHelper::getShortType($typeGuess->getType())
+                    ? FormTypeHelper::getTypeName($typeGuess->getType())
                     : $propertyMetadata['type'];
 
                 $guessedTypeOptions = null !== $typeGuess
