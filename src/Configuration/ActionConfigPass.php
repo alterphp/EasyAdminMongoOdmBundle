@@ -52,7 +52,7 @@ class ActionConfigPass implements ConfigPassInterface
 
         $actionsDisabledByBackend = $this->easyAdminBackendConfig['disabled_actions'];
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
-            $actionsDisabledByDocument = isset($documentConfig['disabled_actions']) ? $documentConfig['disabled_actions'] : [];
+            $actionsDisabledByDocument = $documentConfig['disabled_actions'] ?? [];
             // RESTRICTED_ACTIONS
             $disabledActions = \array_unique(\array_merge($actionsDisabledByCode, $actionsDisabledByBackend, $actionsDisabledByDocument));
 

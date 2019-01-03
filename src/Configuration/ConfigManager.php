@@ -136,7 +136,7 @@ class ConfigManager
             $documentConfig = [];
         }
 
-        return isset($documentConfig[$view]['actions'][$action]) ? $documentConfig[$view]['actions'][$action] : [];
+        return $documentConfig[$view]['actions'][$action] ?? [];
     }
 
     /**

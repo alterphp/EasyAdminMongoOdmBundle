@@ -145,7 +145,7 @@ class PropertyConfigPass implements ConfigPassInterface
             foreach ($this->views as $view) {
                 $originalViewConfig = $backendConfig['documents'][$documentName][$view];
                 foreach ($documentConfig[$view]['fields'] as $fieldName => $fieldConfig) {
-                    $originalFieldConfig = isset($originalViewConfig['fields'][$fieldName]) ? $originalViewConfig['fields'][$fieldName] : null;
+                    $originalFieldConfig = $originalViewConfig['fields'][$fieldName] ?? null;
 
                     if (\array_key_exists($fieldName, $documentConfig['properties'])) {
                         $fieldMetadata = \array_merge(
@@ -178,9 +178,8 @@ class PropertyConfigPass implements ConfigPassInterface
                     // for the field, use it as 'fieldType'. Otherwise, use the guessed
                     // form type of the property data type.
                     if (\in_array($view, ['edit', 'new'])) {
-                        $normalizedConfig['fieldType'] = isset($originalFieldConfig['type'])
-                            ? $originalFieldConfig['type']
-                            : $normalizedConfig['fieldType'];
+                        $normalizedConfig['fieldType'] = $originalFieldConfig['type']
+                            ?? $normalizedConfig['fieldType'];
 
                         if (null === $normalizedConfig['fieldType']) {
                             // this is a virtual field which doesn't exist as a property of
@@ -239,7 +238,7 @@ class PropertyConfigPass implements ConfigPassInterface
         ) {
             $resolvedFormOptions = \array_merge(
                 \array_intersect_key($resolvedFormOptions, ['required' => null]),
-                isset($userDefinedConfig['type_options']) ? $userDefinedConfig['type_options'] : []
+                $userDefinedConfig['type_options'] ?? []
             );
         }
         // if the user has defined the "type" or "type_options"
@@ -255,7 +254,7 @@ class PropertyConfigPass implements ConfigPassInterface
         ) {
             $resolvedFormOptions = \array_merge(
                 $resolvedFormOptions,
-                isset($userDefinedConfig['type_options']) ? $userDefinedConfig['type_options'] : []
+                $userDefinedConfig['type_options'] ?? []
             );
         }
 

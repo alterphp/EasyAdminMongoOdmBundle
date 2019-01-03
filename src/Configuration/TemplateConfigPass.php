@@ -95,8 +95,8 @@ class TemplateConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($this->defaultBackendTemplates as $templateName => $defaultTemplatePath) {
                 $candidateTemplates = [
-                    isset($documentConfig['templates'][$templateName]) ? $documentConfig['templates'][$templateName] : null,
-                    isset($backendConfig['design']['templates'][$templateName]) ? $backendConfig['design']['templates'][$templateName] : null,
+                    $documentConfig['templates'][$templateName] ?? null,
+                    $backendConfig['design']['templates'][$templateName] ?? null,
                     'easy_admin/'.$documentName.'/'.$templateName.'.html.twig',
                     'easy_admin/'.$templateName.'.html.twig',
                 ];
@@ -170,7 +170,7 @@ class TemplateConfigPass implements ConfigPassInterface
         // 3rd level priority: @EasyAdminMongoOdm/default/<templateName>.html.twig
         foreach ($this->defaultBackendTemplates as $templateName => $defaultTemplatePath) {
             $candidateTemplates = [
-                isset($backendConfig['design']['templates'][$templateName]) ? $backendConfig['design']['templates'][$templateName] : null,
+                $backendConfig['design']['templates'][$templateName] ?? null,
                 'easy_admin/'.$templateName.'.html.twig',
             ];
             $templatePath = $this->findFirstExistingTemplate($candidateTemplates) ?: $defaultTemplatePath;

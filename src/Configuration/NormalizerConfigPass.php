@@ -101,7 +101,7 @@ class NormalizerConfigPass implements ConfigPassInterface
             foreach (\array_keys($this->defaultViewConfig) as $view) {
                 $documentConfig[$view] = \array_replace_recursive(
                     $this->defaultViewConfig[$view],
-                    isset($documentConfig[$view]) ? $documentConfig[$view] : []
+                    $documentConfig[$view] ?? []
                 );
             }
 
@@ -176,7 +176,7 @@ class NormalizerConfigPass implements ConfigPassInterface
                     }
 
                     // fields that don't define the 'property' name are special form design elements
-                    $fieldName = isset($fieldConfig['property']) ? $fieldConfig['property'] : '_easyadmin_form_design_element_'.$designElementIndex;
+                    $fieldName = $fieldConfig['property'] ?? '_easyadmin_form_design_element_'.$designElementIndex;
                     $fields[$fieldName] = $fieldConfig;
                     ++$designElementIndex;
                 }

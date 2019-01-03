@@ -9,7 +9,7 @@ use Pagerfanta\Pagerfanta;
 
 class Paginator
 {
-    const MAX_ITEMS = 15;
+    public const MAX_ITEMS = 15;
 
     /**
      * Creates a Doctrine Mongo ODM paginator for the given query builder.
