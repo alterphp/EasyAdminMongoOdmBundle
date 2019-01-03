@@ -40,81 +40,61 @@
 {% endspaceless %}
 {% endblock %}
 
-{% block content_header %}
-    <div class="row">
-        <div class="col-sm-5">
-            {% block content_title_wrapper %}
-                <h1 class="title">{{ block('content_title') }}</h1>
-            {% endblock %}
-        </div>
+{% block global_actions %}
+    {% if easyadmin_mongo_odm_action_is_enabled_for_list_view('search', _document_config.name) %}
+        {% set _action = easyadmin_mongo_odm_get_action_for_list_view('search', _document_config.name) %}
 
-        <div class="col-sm-7">
-            <div class="global-actions">
-                {% block global_actions %}
-                    {% if easyadmin_mongo_odm_action_is_enabled_for_list_view('search', _document_config.name) %}
-                        {% set _action = easyadmin_mongo_odm_get_action_for_list_view('search', _document_config.name) %}
-
-                        {% block search_action %}
-                            <div class="form-action {{ _action.css_class|default('') }}">
-                                <form method="get" action="{{ path('easyadmin_mongo_odm') }}">
-                                    {% block search_form %}
-                                        <input type="hidden" name="action" value="search">
-                                        <input type="hidden" name="document" value="{{ _request_parameters.document }}">
-                                        <input type="hidden" name="sortField" value="{{ _document_config.search.sort.field|default(_request_parameters.sortField) }}">
-                                        <input type="hidden" name="sortDirection" value="{{ _document_config.search.sort.direction|default(_request_parameters.sortDirection) }}">
-                                        <input type="hidden" name="menuIndex" value="{{ _request_parameters.menuIndex }}">
-                                        <input type="hidden" name="submenuIndex" value="{{ _request_parameters.submenuIndex }}">
-                                        <div class="input-group">
-                                            <input class="form-control" type="search" name="query" value="{{ app.request.get('query')|default('') }}">
-                                            <span class="input-group-btn">
-                                                <button class="btn" type="submit" formtarget="{{ _action.target }}">
-                                                    <i class="fa fa-search"></i>
-                                                    <span class="hidden-xs hidden-sm">{{ _action.label|default('action.search')|trans(_trans_parameters) }}</span>
-                                                </button>
-                                            </span>
-                                        </div>
-                                    {% endblock %}
-                                </form>
+        {% block search_action %}
+            <div class="form-action form-action-search {{ _action.css_class|default('') }}">
+                <form method="get" action="{{ path('easyadmin_mongo_odm') }}">
+                    {% block search_form %}
+                        <input type="hidden" name="action" value="search">
+                        <input type="hidden" name="document" value="{{ _request_parameters.document }}">
+                        <input type="hidden" name="sortField" value="{{ _document_config.search.sort.field|default(_request_parameters.sortField) }}">
+                        <input type="hidden" name="sortDirection" value="{{ _document_config.search.sort.direction|default(_request_parameters.sortDirection) }}">
+                        <input type="hidden" name="menuIndex" value="{{ _request_parameters.menuIndex }}">
+                        <input type="hidden" name="submenuIndex" value="{{ _request_parameters.submenuIndex }}">
+                        <div class="form-group">
+                            <div class="form-widget">
+                                <input class="form-control" type="search" name="query" value="{{ app.request.get('query')|default('') }}" placeholder="{{ _action.label|default('action.search')|trans(_trans_parameters) }}">
                             </div>
-                        {% endblock search_action %}
-                    {% endif %}
-
-                    {% if easyadmin_mongo_odm_action_is_enabled_for_list_view('new', _document_config.name) %}
-                        {% set _action = easyadmin_mongo_odm_get_action_for_list_view('new', _document_config.name) %}
-                        {% block new_action %}
-                            <div class="button-action">
-                                <a class="{{ _action.css_class|default('') }}" href="{{ path('easyadmin_mongo_odm', _request_parameters|merge({ action: _action.name })) }}" target="{{ _action.target }}">
-                                    {% if _action.icon %}<i class="fa fa-{{ _action.icon }}"></i>{% endif %}
-                                    {{ _action.label is defined and not _action.label is empty ? _action.label|trans(_trans_parameters) }}
-                                </a>
-                            </div>
-                        {% endblock new_action %}
-                    {% endif %}
-                {% endblock global_actions %}
+                        </div>
+                    {% endblock %}
+                </form>
             </div>
-        </div>
-    </div>
-{% endblock content_header %}
+        {% endblock search_action %}
+    {% endif %}
+
+    {% if easyadmin_mongo_odm_action_is_enabled_for_list_view('new', _document_config.name) %}
+        {% set _action = easyadmin_mongo_odm_get_action_for_list_view('new', _document_config.name) %}
+        {% block new_action %}
+            <div class="button-action">
+                <a class="{{ _action.css_class|default('') }}" href="{{ path('easyadmin_mongo_odm', _request_parameters|merge({ action: _action.name })) }}" target="{{ _action.target }}">
+                    {% if _action.icon %}<i class="fa fa-{{ _action.icon }}"></i>{% endif %}
+                    {{ _action.label is defined and not _action.label is empty ? _action.label|trans(_trans_parameters) }}
+                </a>
+            </div>
+        {% endblock new_action %}
+    {% endif %}
+{% endblock global_actions %}
 
 {% block main %}
     {% set _list_item_actions = easyadmin_mongo_odm_get_actions_for_list_item(_document_config.name) %}
 
-    <div class="table-responsive">
-    <table class="table">
+    <table class="table datagrid">
         <thead>
         {% block table_head %}
             <tr>
                 {% for field, metadata in fields %}
-                    {% set isSortingField = metadata.property == app.request.get('sortField')|split('.')|first %}
+                    {% set isSortingField = (metadata.property == app.request.get('sortField')) or ('association' == metadata.type and app.request.get('sortField') starts with metadata.property ~ '.') %}
                     {% set nextSortDirection = isSortingField ? (app.request.get('sortDirection') == 'DESC' ? 'ASC' : 'DESC') : 'DESC' %}
-                    {% set _column_label = (metadata.label ?: field|humanize)|trans(_trans_parameters) %}
-                    {% set _column_icon = isSortingField ? (nextSortDirection == 'DESC' ? 'fa-caret-up' : 'fa-caret-down') : 'fa-sort' %}
+                    {% set _column_label = metadata.label|trans(_trans_parameters) %}
+                    {% set _column_icon = isSortingField ? (nextSortDirection == 'DESC' ? 'fa-arrow-up' : 'fa-arrow-down') : 'fa-sort' %}
 
-                    <th data-property-name="{{ metadata.property }}" class="{{ isSortingField ? 'sorted' }} {{ metadata.virtual ? 'virtual' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}" {{ easyadmin_config('design.rtl') ? 'dir="rtl"' }}>
+                    <th class="{{ isSortingField ? 'sorted' }} {{ metadata.virtual ? 'virtual' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}" {{ easyadmin_config('design.rtl') ? 'dir="rtl"' }}>
                         {% if metadata.sortable %}
                             <a href="{{ path('easyadmin_mongo_odm', _request_parameters|merge({ page: 1, sortField: metadata.property, sortDirection: nextSortDirection })) }}">
-                                <i class="fa {{ _column_icon }}"></i>
-                                {{ _column_label|raw }}
+                                {{ _column_label|raw }} <i class="fa {{ _column_icon }}"></i>
                             </a>
                         {% else %}
                             <span>{{ _column_label|raw }}</span>
@@ -124,7 +104,7 @@
 
                 {% if _list_item_actions|length > 0 %}
                     <th  {{ easyadmin_mongo_odm_config('design.rtl') ? 'dir="rtl"' }}>
-                        <span>{{ 'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') }}</span>
+                        <span class="sr-only">{{ 'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') }}</span>
                     </th>
                 {% endif %}
             </tr>
@@ -141,14 +121,14 @@
                         {% set isSortingField = metadata.property == app.request.get('sortField') %}
                         {% set _column_label =  (metadata.label ?: field|humanize)|trans(_trans_parameters)  %}
 
-                        <td data-label="{{ _column_label }}" class="{{ isSortingField ? 'sorted' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}" {{ easyadmin_mongo_odm_config('design.rtl') ? 'dir="rtl"' }}>
+                        <td class="{{ isSortingField ? 'sorted' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}" {{ easyadmin_mongo_odm_config('design.rtl') ? 'dir="rtl"' }}>
                             {{ easyadmin_mongo_odm_render_field_for_list_view(_document_config.name, item, metadata) }}
                         </td>
                     {% endfor %}
 
                     {% if _list_item_actions|length > 0 %}
                         {% set _column_label =  'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') %}
-                        <td data-label="{{ _column_label }}" class="actions">
+                        <td class="actions">
                         {% block item_actions %}
                             {{ include('@EasyAdminMongoOdm/default/includes/_actions.html.twig', {
                                 actions: _list_item_actions,
@@ -171,11 +151,6 @@
         {% endblock table_body %}
         </tbody>
     </table>
-    </div>
-
-    {% block paginator %}
-        {{ include(_document_config.templates.paginator) }}
-    {% endblock paginator %}
 
     {# RESTRICTED_ACTIONS #}
     {#% block delete_form %}
@@ -195,43 +170,51 @@
     {% endblock delete_form %#}
 {% endblock main %}
 
+{% block content_footer %}
+    {% block paginator %}
+        {{ include(_document_config.templates.paginator) }}
+    {% endblock paginator %}
+{% endblock %}
+
 {% block body_javascript %}
     {{ parent() }}
 
     <script type="text/javascript">
         $(function() {
-            $('#main').find('table .toggle input[type="checkbox"]').change(function() {
-                var toggle = $(this);
-                var newValue = toggle.prop('checked');
-                var oldValue = !newValue;
+            const toggles = document.querySelectorAll('.checkbox-switch input[type="checkbox"]');
+            for (i = 0; i < toggles.length; i++) {
+                toggles[i].addEventListener('change', function () {
+                    const toggle = this;
+                    const newValue = this.checked;
+                    const oldValue = !newValue;
+                    const propertyName = this.closest('.checkbox-switch').dataset.propertyname;
 
-                var columnIndex = $(this).closest('td').index() + 1;
-                var propertyName = $('table th.toggle:nth-child(' + columnIndex + ')').data('property-name');
+                    const toggleUrl = "{{ path('easyadmin_mongo_odm', { action: 'edit', document: _document_config.name, view: 'list' })|raw }}"
+                        + "&id=" + this.closest('tr').dataset.id
+                        + "&property=" + propertyName
+                        + "&newValue=" + newValue.toString();
 
-                var toggleUrl = "{{ path('easyadmin_mongo_odm', { action: 'edit', document: _document_config.name, view: 'list' })|raw }}"
-                              + "&id=" + $(this).closest('tr').data('id')
-                              + "&property=" + propertyName
-                              + "&newValue=" + newValue.toString();
+                    let toggleRequest = $.ajax({ type: "GET", url: toggleUrl, data: {} });
 
-                var toggleRequest = $.ajax({ type: "GET", url: toggleUrl, data: {} });
+                    toggleRequest.done(function(result) {});
 
-                toggleRequest.done(function(result) {});
-
-                toggleRequest.fail(function() {
-                    // in case of error, restore the original value and disable the toggle
-                    toggle.bootstrapToggle(oldValue == true ? 'on' : 'off');
-                    toggle.bootstrapToggle('disable');
+                    toggleRequest.fail(function() {
+                        // in case of error, restore the original value and disable the toggle
+                        toggle.checked = oldValue;
+                        toggle.disabled = true;
+                        toggle.closest('.checkbox-switch').classList.add('disabled');
+                    });
                 });
-            });
+            }
 
             $('.action-delete').on('click', function(e) {
                 e.preventDefault();
-                var id = $(this).parents('tr').first().data('id');
+                const id = $(this).parents('tr').first().data('id');
 
                 $('#modal-delete').modal({ backdrop: true, keyboard: true })
                     .off('click', '#modal-delete-button')
                     .on('click', '#modal-delete-button', function () {
-                        var deleteForm = $('#delete-form');
+                        let deleteForm = $('#delete-form');
                         deleteForm.attr('action', deleteForm.attr('action').replace('__id__', id));
                         deleteForm.trigger('submit');
                     });
@@ -241,7 +224,7 @@
 
     {% if 'search' == app.request.get('action') %}
         <script type="text/javascript">
-            var _search_query = "{{ app.request.get('query')|default('')|e('js') }}";
+            const _search_query = "{{ app.request.get('query')|default('')|e('js') }}";
             // the original query is prepended to allow matching exact phrases in addition to single words
             $('#main').find('table tbody').highlight($.merge([_search_query], _search_query.split(' ')));
         </script>
