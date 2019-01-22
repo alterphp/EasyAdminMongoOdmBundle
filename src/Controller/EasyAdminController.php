@@ -9,8 +9,9 @@ use AlterPHP\EasyAdminMongoOdmBundle\Exception\NoDocumentsConfiguredException;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\UndefinedDocumentException;
 use AlterPHP\EasyAdminMongoOdmBundle\Search\Paginator;
 use AlterPHP\EasyAdminMongoOdmBundle\Search\QueryBuilder;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController as BaseEasyAdminController;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,6 +35,7 @@ class EasyAdminController extends BaseEasyAdminController
                 ConfigManager::class,
                 QueryBuilder::class,
                 Paginator::class,
+                'doctrine_mongodb' => '?'.ManagerRegistry::class,
             ]
         );
     }
@@ -359,7 +361,7 @@ class EasyAdminController extends BaseEasyAdminController
     protected function getMongoOdmDoctrine(): ManagerRegistry
     {
         if (!$this->container->has('doctrine_mongodb')) {
-            throw new \LogicException('The DoctrineMongoDBBundle is not registered in your application. Try running "composer require doctrine/mongodb-odm-bundle".');
+            throw new ServiceNotFoundException('doctrine_mongodb', null, null, array(), sprintf('1- The DoctrineMongoDBBundle is not registered in your application. Try running "composer require doctrine/mongodb-odm-bundle". 2- Did you forget to register your controller as a service subscriber? This can be fixed either by using autoconfiguration or by manually wiring a "doctrine_mongodb" in the service locator passed to the controller.', \get_class($this)));
         }
 
         return $this->container->get('doctrine_mongodb');
