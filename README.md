@@ -2,7 +2,7 @@
 
 Provides support of Doctrine Mongo ODM documents in EasyAdmin
 
-This bundle is under development and keeps experimental as long as no v1.0.0 tag is available !
+:warning: This bundle is under development and __remains experimental__ as long as no v1.0.0 tag is available !
 
 ## Installation
 
