@@ -16,6 +16,8 @@
 {% endspaceless %}
 {% endblock %}
 
+{% block content_footer_wrapper '' %}
+
 {% block main %}
     <div class="form-horizontal">
         {% block show_fields %}
@@ -38,6 +40,7 @@
                 {% endblock %}
             {% endfor %}
         {% endblock %}
+    </div>
 
     <section class="content-footer">
         <div class="form-actions">
@@ -53,9 +56,8 @@
                     item_id: _document_id
                 }, with_context = false) }}
             {% endblock item_actions %}
-            </div>
         </div>
-    </div>
+    </section>
 
     {% block delete_form %}
         {# RESTRICTED_ACTIONS #}
