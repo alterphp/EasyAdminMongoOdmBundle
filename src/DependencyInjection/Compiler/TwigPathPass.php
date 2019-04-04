@@ -22,11 +22,6 @@ class TwigPathPass implements CompilerPassInterface
                 'addPath',
                 [$nativeEasyAdminTwigPath, 'EasyAdminMongoOdm']
             );
-            // Base prefixed NS for original bundle
-            $twigLoaderFilesystemDefinition->addMethodCall(
-                'addPath',
-                [$nativeEasyAdminTwigPath, 'BaseEasyAdmin']
-            );
         }
     }
 }
