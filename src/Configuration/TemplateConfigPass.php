@@ -95,10 +95,9 @@ class TemplateConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach ($this->defaultBackendTemplates as $templateName => $defaultTemplatePath) {
                 $candidateTemplates = [
-                    $documentConfig['templates'][$templateName] ?? null,
-                    $backendConfig['design']['templates'][$templateName] ?? null,
-                    'easy_admin/'.$documentName.'/'.$templateName.'.html.twig',
-                    'easy_admin/'.$templateName.'.html.twig',
+                    $documentConfig['templates'][$templateName] ?? '',
+                    $backendConfig['design']['templates'][$templateName] ?? '',
+                    $defaultTemplatePath,
                 ];
                 $templatePath = $this->findFirstExistingTemplate($candidateTemplates) ?: $defaultTemplatePath;
 
@@ -116,33 +115,9 @@ class TemplateConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach (['list', 'show'] as $view) {
                 foreach ($documentConfig[$view]['fields'] as $fieldName => $fieldMetadata) {
-                    // if the field defines its own template, resolve its location
-                    if (isset($fieldMetadata['template'])) {
-                        $templatePath = $fieldMetadata['template'];
-
-                        // template path should contain the .html.twig extension
-                        // however, for usability reasons, we silently fix this issue if needed
-                        if ('.html.twig' !== \substr($templatePath, -10)) {
-                            $templatePath .= '.html.twig';
-                            @\trigger_error(\sprintf('Passing a template path without the ".html.twig" extension is deprecated since version 1.11.7 and will be removed in 2.0. Use "%s" as the value of the "template" option for the "%s" field in the "%s" view of the "%s" document.', $templatePath, $fieldName, $view, $documentName), E_USER_DEPRECATED);
-                        }
-
-                        // before considering $templatePath a regular Symfony template
-                        // path, check if the given template exists in any of these directories:
-                        // * app/Resources/views/easy_admin/<documentName>/<templatePath>
-                        // * app/Resources/views/easy_admin/<templatePath>
-                        $templatePath = $this->findFirstExistingTemplate([
-                            'easy_admin/'.$documentName.'/'.$templatePath,
-                            'easy_admin/'.$templatePath,
-                            $templatePath,
-                        ]);
-                    } else {
-                        // At this point, we don't know the exact data type associated with each field.
-                        // The template is initialized to null and it will be resolved at runtime in the Configurator class
-                        $templatePath = null;
-                    }
-
-                    $documentConfig[$view]['fields'][$fieldName]['template'] = $templatePath;
+                    // if the field defines its own template, use it. Otherwise, initialize
+                    // it to null because it will be resolved at runtime in the Configurator
+                    $documentConfig[$view]['fields'][$fieldName]['template'] = $fieldMetadata['template'] ?? null;
                 }
             }
 
@@ -199,6 +174,7 @@ class TemplateConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             foreach (['list', 'show'] as $view) {
                 foreach ($documentConfig[$view]['fields'] as $fieldName => $fieldMetadata) {
+
                     if (null !== $fieldMetadata['template']) {
                         continue;
                     }
