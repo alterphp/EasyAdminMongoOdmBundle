@@ -5,11 +5,13 @@ namespace AlterPHP\EasyAdminMongoOdmBundle\Twig;
 use AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Defines the filters and functions used to render the bundle's templates.
  */
-class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
+class EasyAdminMongoOdmTwigExtension extends AbstractExtension
 {
     /** @var ConfigManager */
     private $configManager;
@@ -31,17 +33,17 @@ class EasyAdminMongoOdmTwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_config', [$this, 'getBackendConfiguration']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_document', [$this, 'getDocumentConfiguration']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled_for_*_view', [$this, 'isActionEnabled']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_action_is_enabled', [$this, 'isActionEnabled']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action', [$this, 'getActionConfiguration']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_action_for_*_view', [$this, 'getActionConfiguration']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_get_actions_for_*_item', [$this, 'getActionsForItem']),
-            new \Twig_SimpleFunction('easyadmin_mongo_odm_render_field_for_*_view', [$this, 'renderDocumentField'], ['is_safe' => ['html'], 'needs_environment' => true]),
+            new TwigFunction('easyadmin_mongo_odm_config', [$this, 'getBackendConfiguration']),
+            new TwigFunction('easyadmin_mongo_odm_document', [$this, 'getDocumentConfiguration']),
+            new TwigFunction('easyadmin_mongo_odm_action_is_enabled_for_*_view', [$this, 'isActionEnabled']),
+            new TwigFunction('easyadmin_mongo_odm_action_is_enabled', [$this, 'isActionEnabled']),
+            new TwigFunction('easyadmin_mongo_odm_get_action', [$this, 'getActionConfiguration']),
+            new TwigFunction('easyadmin_mongo_odm_get_action_for_*_view', [$this, 'getActionConfiguration']),
+            new TwigFunction('easyadmin_mongo_odm_get_actions_for_*_item', [$this, 'getActionsForItem']),
+            new TwigFunction('easyadmin_mongo_odm_render_field_for_*_view', [$this, 'renderDocumentField'], ['is_safe' => ['html'], 'needs_environment' => true]),
 
             /*
-            new \Twig_SimpleFunction('easyadmin_path', array($this, 'getDocumentPath')),
+            new TwigFunction('easyadmin_path', array($this, 'getDocumentPath')),
             */
         ];
     }

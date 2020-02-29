@@ -360,10 +360,10 @@ class EasyAdminController extends BaseEasyAdminController
      */
     protected function getMongoOdmDoctrine(): ManagerRegistry
     {
-        if (!$this->container->has('doctrine_mongodb')) {
+        if (!$this->has('doctrine_mongodb')) {
             throw new ServiceNotFoundException('doctrine_mongodb', null, null, array(), sprintf('1- The DoctrineMongoDBBundle is not registered in your application. Try running "composer require doctrine/mongodb-odm-bundle". 2- Did you forget to register your controller as a service subscriber? This can be fixed either by using autoconfiguration or by manually wiring a "doctrine_mongodb" in the service locator passed to the controller.', \get_class($this)));
         }
 
-        return $this->container->get('doctrine_mongodb');
+        return $this->get('doctrine_mongodb');
     }
 }

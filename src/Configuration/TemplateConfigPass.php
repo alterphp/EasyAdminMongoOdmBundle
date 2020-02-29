@@ -4,6 +4,7 @@ namespace AlterPHP\EasyAdminMongoOdmBundle\Configuration;
 
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use Symfony\Component\Finder\Finder;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Processes the template configuration to decide which template to use to
@@ -59,7 +60,7 @@ class TemplateConfigPass implements ConfigPassInterface
     ];
     private $existingTemplates = [];
 
-    public function __construct(\Twig_Loader_Filesystem $twigLoader)
+    public function __construct(FilesystemLoader $twigLoader)
     {
         $this->twigLoader = $twigLoader;
     }

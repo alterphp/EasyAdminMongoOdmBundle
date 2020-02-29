@@ -37,7 +37,7 @@ class EasyAdminMongoOdmDataCollector extends DataCollector
     /**
      * {@inheritdoc}
      */
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         if ('easyadmin_mongo_odm' !== $request->attributes->get('_route')) {
             return;
