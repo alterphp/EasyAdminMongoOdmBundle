@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "easycorp/easyadmin-bundle": "^2.0"
+        "easycorp/easyadmin-bundle": "^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.11",
@@ -48,7 +48,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     }
 }
