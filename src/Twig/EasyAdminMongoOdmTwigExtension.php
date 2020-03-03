@@ -5,6 +5,7 @@ namespace AlterPHP\EasyAdminMongoOdmBundle\Twig;
 use AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -144,17 +145,17 @@ class EasyAdminMongoOdmTwigExtension extends AbstractExtension
      * property doesn't exist or its value is not accessible. This ensures that
      * the function never generates a warning or error message when calling it.
      *
-     * @param \Twig_Environment $twig
-     * @param string            $view          The view in which the item is being rendered
-     * @param string            $documentName  The name of the document associated with the item
-     * @param object            $item          The item which is being rendered
-     * @param array             $fieldMetadata The metadata of the actual field being rendered
+     * @param Environment $twig
+     * @param string      $view          The view in which the item is being rendered
+     * @param string      $documentName  The name of the document associated with the item
+     * @param object      $item          The item which is being rendered
+     * @param array       $fieldMetadata The metadata of the actual field being rendered
      *
      * @return string
      *
      * @throws \Exception
      */
-    public function renderDocumentField(\Twig_Environment $twig, $view, $documentName, $item, array $fieldMetadata)
+    public function renderDocumentField(Environment $twig, $view, $documentName, $item, array $fieldMetadata)
     {
         $documentConfiguration = $this->configManager->getDocumentConfig($documentName);
         $hasCustomTemplate = 0 !== \strpos($fieldMetadata['template'], '@EasyAdminMongoOdm/');
