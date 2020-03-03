@@ -211,9 +211,9 @@ class TemplateConfigPass implements ConfigPassInterface
     private function findFirstExistingTemplate(array $templatePaths)
     {
         foreach ($templatePaths as $templatePath) {
-            // template name normalization code taken from \Twig_Loader_Filesystem::normalizeName()
+            // template name normalization code taken from FilesystemLoader::normalizeName()
             $templatePath = \preg_replace('#/{2,}#', '/', \str_replace('\\', '/', $templatePath));
-            $namespace = \Twig_Loader_Filesystem::MAIN_NAMESPACE;
+            $namespace = FilesystemLoader::MAIN_NAMESPACE;
 
             if (isset($templatePath[0]) && '@' === $templatePath[0]) {
                 if (false === $pos = \strpos($templatePath, '/')) {
@@ -235,7 +235,7 @@ class TemplateConfigPass implements ConfigPassInterface
                             $template = \str_replace('\\', '/', $template);
                         }
 
-                        if (\Twig_Loader_Filesystem::MAIN_NAMESPACE !== $namespace) {
+                        if (FilesystemLoader::MAIN_NAMESPACE !== $namespace) {
                             $template = \sprintf('@%s/%s', $namespace, $template);
                         }
                         $this->existingTemplates[$namespace][$template] = true;

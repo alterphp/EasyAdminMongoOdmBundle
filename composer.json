@@ -28,10 +28,10 @@
         "symfony/dom-crawler": "^4.3|^5.0",
         "symfony/phpunit-bridge": "^4.3|^5.0",
         "symfony/polyfill": "~1.0",
-        "symfony/templating": "^4.3|^5.0",
         "symfony/thanks": "^1.0",
         "symfony/twig-bundle": "^4.3|^5.0",
-        "symfony/var-dumper": "^4.3|^5.0"
+        "symfony/var-dumper": "^4.3|^5.0",
+        "twig/twig": "^2.11.3|^3.0"
     },
     "config": {
         "sort-packages": true

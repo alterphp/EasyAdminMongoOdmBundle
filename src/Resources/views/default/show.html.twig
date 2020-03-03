@@ -10,10 +10,10 @@
 {% block body_class 'show show-' ~ _document_config.name|lower %}
 
 {% block content_title %}
-{% spaceless %}
+{% apply spaceless %}
     {% set _default_title = 'show.page_title'|trans(_trans_parameters, 'EasyAdminBundle') %}
     {{ _document_config.show.title is defined ? _document_config.show.title|trans(_trans_parameters) : _default_title }}
-{% endspaceless %}
+{% endapply %}
 {% endblock %}
 
 {% block content_footer_wrapper '' %}
