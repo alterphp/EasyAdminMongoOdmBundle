@@ -119,7 +119,7 @@ class EasyAdminController extends BaseEasyAdminController
         $subject = $arguments['paginator'] ?? $arguments['document'];
         $event = new GenericEvent($subject, $arguments);
 
-        $this->get('event_dispatcher')->dispatch($eventName, $event);
+        $this->get('event_dispatcher')->dispatch($event, $eventName);
     }
 
     /**
