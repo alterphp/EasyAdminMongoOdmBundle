@@ -2,7 +2,7 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\Configuration;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
