@@ -5,7 +5,7 @@ namespace AlterPHP\EasyAdminMongoOdmBundle\Search;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Builder as DoctrineQueryBuilder;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Uid\Uuid;
 
 class QueryBuilder
 {
