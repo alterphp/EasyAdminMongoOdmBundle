@@ -27,6 +27,7 @@ class TemplateConfigPass implements ConfigPassInterface
         'field_array' => '@EasyAdminMongoOdm/default/field_array.html.twig',
         'field_association' => '@EasyAdminMongoOdm/default/field_association.html.twig',
         'field_bigint' => '@EasyAdminMongoOdm/default/field_bigint.html.twig',
+        'field_bool' => '@EasyAdminMongoOdm/default/field_boolean.html.twig',
         'field_boolean' => '@EasyAdminMongoOdm/default/field_boolean.html.twig',
         'field_date' => '@EasyAdminMongoOdm/default/field_date.html.twig',
         'field_datetime' => '@EasyAdminMongoOdm/default/field_datetime.html.twig',
