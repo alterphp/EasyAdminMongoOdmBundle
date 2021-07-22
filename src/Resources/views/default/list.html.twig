@@ -32,7 +32,7 @@
 {% apply spaceless %}
     {% if 'search' == app.request.get('action') %}
         {% set _default_title = 'search.page_title'|transchoice(paginator.nbResults, {}, 'EasyAdminBundle') %}
-        {{ (_document_config.search.title is defined ? _document_config.search.title|transchoice(paginator.nbResults) : _default_title)|raw }}
+        {{ (_document_config.search.title is defined ? _document_config.search.title|transchoice(paginator.nbResults, {}, 'EasyAdminBundle') : _default_title)|raw }}
     {% else %}
         {% set _default_title = 'list.page_title'|trans(_trans_parameters, 'EasyAdminBundle') %}
         {{ (_document_config.list.title is defined ? _document_config.list.title|trans(_trans_parameters) : _default_title)|raw }}
