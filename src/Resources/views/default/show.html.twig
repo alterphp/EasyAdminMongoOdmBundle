@@ -21,7 +21,7 @@
 {% block main %}
     <div class="container bg-secondary">
     {% block show_fields %}
-        <dl class="row pt-2">
+        <dl class="row p-2">
             {% for field, metadata in fields %}
                 {% block show_field %}
                     <dt class="col-sm-2">{{ metadata.label|trans(_trans_parameters)|raw }}</dt>
