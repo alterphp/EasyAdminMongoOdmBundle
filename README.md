@@ -42,7 +42,6 @@ easy_admin:
 
 ## TODOs
 
-* Controller listener to implement (and override controller by configuration)
 * Exception listener for production env ?
 * QueryBuilder => deal with associations ?
 * PropertyConfigPass is not implemented => item `format` per field is not preset

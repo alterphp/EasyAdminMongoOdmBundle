@@ -40,11 +40,11 @@
             <argument type="service" id="request_stack" on-invalid="null" />
             <tag name="kernel.event_listener" event="easy_admin_mongo_odm.post_initialize" method="initializeRequest" />
         </service>
-        <!--service id="easyadmin_mongo_odm.listener.controller" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\ControllerListener" public="true">
+        <service id="easyadmin_mongo_odm.listener.controller" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\ControllerListener" public="true">
             <argument type="service" id="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager" />
             <argument type="service" id="controller_resolver" />
             <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" />
-        </service-->
+        </service>
         <!--service id="easyadmin_mongo_odm.listener.exception" class="AlterPHP\EasyAdminMongoOdmBundle\EventListener\ExceptionListener" public="true">
             <argument type="service" id="twig" />
             <argument>%easyadmin_mongo_odm.config%</argument>
