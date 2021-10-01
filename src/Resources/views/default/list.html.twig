@@ -130,6 +130,7 @@
                         {% set _column_label =  'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') %}
                         <td class="actions">
                         {% block item_actions %}
+                            {% set _list_item_actions = easyadmin_mongo_odm_get_actions_for_list_item(_document_config.name) %}
                             {{ include('@EasyAdminMongoOdm/default/includes/_actions.html.twig', {
                                 actions: _list_item_actions,
                                 request_parameters: _request_parameters,
