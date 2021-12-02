@@ -28,7 +28,6 @@ class EasyAdminMongoOdmExtension extends Extension
 
         // EasyAdmin Mongo ODM configuration
         $container->setParameter('easyadmin_mongo_odm.config', $config);
-        $container->setParameter('easyadmin_mongo_odm.cache.dir', $container->getParameter('kernel.cache_dir').'/easy_admin_mongo_odm');
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');

@@ -8,9 +8,6 @@
             <tag name="container.service_subscriber" />
         </service>
 
-        <service id="AlterPHP\EasyAdminMongoOdmBundle\Cache\CacheManager" public="true">
-            <argument>%easyadmin_mongo_odm.cache.dir%</argument>
-        </service>
         <service id="AlterPHP\EasyAdminMongoOdmBundle\Cache\ConfigWarmer" public="false">
             <argument type="service" id="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager" />
             <tag name="kernel.cache_warmer" priority="-2048" />
