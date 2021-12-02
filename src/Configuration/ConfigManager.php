@@ -2,17 +2,19 @@
 
 namespace AlterPHP\EasyAdminMongoOdmBundle\Configuration;
 
-use AlterPHP\EasyAdminMongoOdmBundle\Cache\CacheManager;
 use AlterPHP\EasyAdminMongoOdmBundle\Exception\UndefinedDocumentException;
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigPassInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ConfigManager
 {
+    private const CACHE_KEY = 'easyadmin_mongoodm.processed_config';
+
     /** @var array */
     private $odmBackendConfig;
-    /** @var CacheManager */
-    private $cacheManager;
+    /** @var CacheInterface */
+    private $cache;
     /** @var PropertyAccessorInterface */
     private $propertyAccessor;
     /** @var array */
@@ -23,12 +25,12 @@ class ConfigManager
     private $debug;
 
     public function __construct(
-        CacheManager $cacheManager, PropertyAccessorInterface $propertyAccessor, array $originalOdmBackendConfig, $debug
+        array $originalOdmBackendConfig, $debug, PropertyAccessorInterface $propertyAccessor, CacheInterface $cache
     ) {
-        $this->cacheManager = $cacheManager;
-        $this->propertyAccessor = $propertyAccessor;
         $this->originalOdmBackendConfig = $originalOdmBackendConfig;
         $this->debug = $debug;
+        $this->propertyAccessor = $propertyAccessor;
+        $this->cache = $cache;
     }
 
     /*
@@ -53,9 +55,7 @@ class ConfigManager
      */
     public function getBackendConfig($propertyPath = null)
     {
-        if (null === $this->odmBackendConfig) {
-            $this->odmBackendConfig = $this->processOdmConfig();
-        }
+        $this->loadBackendConfig();
 
         if (empty($propertyPath)) {
             return $this->odmBackendConfig;
@@ -156,28 +156,19 @@ class ConfigManager
         return !\in_array($action, $documentConfig['disabled_actions']) && \array_key_exists($action, $documentConfig[$view]['actions']);
     }
 
-    /**
-     * It processes the original backend configuration defined by the end-users
-     * to generate the full configuration used by the application. Depending on
-     * the environment, the configuration is processed every time or once and
-     * the result cached for later reuse.
-     *
-     * @return array
-     */
-    private function processOdmConfig()
+    private function loadBackendConfig(): array
     {
+        if (null !== $this->odmBackendConfig) {
+            return $this->odmBackendConfig;
+        }
+
         if (true === $this->debug) {
+            return $this->odmBackendConfig = $this->doProcessOdmConfig($this->originalOdmBackendConfig);
+        }
+
+        return $this->odmBackendConfig = $this->cache->get(self::CACHE_KEY, function () {
             return $this->doProcessOdmConfig($this->originalOdmBackendConfig);
-        }
-
-        if ($this->cacheManager->hasItem('processed_odm_config')) {
-            return $this->cacheManager->getItem('processed_odm_config');
-        }
-
-        $odmBackendConfig = $this->doProcessOdmConfig($this->originalOdmBackendConfig);
-        $this->cacheManager->save('processed_odm_config', $odmBackendConfig);
-
-        return $odmBackendConfig;
+        });
     }
 
     /**

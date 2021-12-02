@@ -16,10 +16,10 @@
             <tag name="kernel.cache_warmer" priority="-2048" />
         </service>
         <service id="AlterPHP\EasyAdminMongoOdmBundle\Configuration\ConfigManager" public="true">
-            <argument type="service" id="AlterPHP\EasyAdminMongoOdmBundle\Cache\CacheManager" />
-            <argument type="service" id="property_accessor" />
             <argument>%easyadmin_mongo_odm.config%</argument>
             <argument>%kernel.debug%</argument>
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="cache.easyadmin" />
         </service>
         <service id="AlterPHP\EasyAdminMongoOdmBundle\Search\QueryBuilder" public="true">
             <argument type="service" id="doctrine_mongodb" />
