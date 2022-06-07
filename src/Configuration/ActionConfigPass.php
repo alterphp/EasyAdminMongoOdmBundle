@@ -104,6 +104,10 @@ class ActionConfigPass implements ConfigPassInterface
 
                 $backendConfig['documents'][$documentName][$view]['actions'] = $actionsConfig;
             }
+
+            if (!\array_key_exists('collapse_actions', $documentConfig['list'])) {
+                $backendConfig['documents'][$documentName]['list']['collapse_actions'] = $backendConfig['list']['collapse_actions'] ?? false;
+            }
         }
 
         return $backendConfig;
