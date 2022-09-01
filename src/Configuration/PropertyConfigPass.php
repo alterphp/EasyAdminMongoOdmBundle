@@ -92,8 +92,19 @@ class PropertyConfigPass implements ConfigPassInterface
         foreach ($backendConfig['documents'] as $documentName => $documentConfig) {
             $properties = [];
             foreach ($documentConfig['properties'] as $propertyName => $propertyMetadata) {
-                $typeGuess = $this->getFormTypeGuessOfProperty($documentConfig['class'], $propertyName);
-                $requiredGuess = $this->getFormRequiredGuessOfProperty($documentConfig['class'], $propertyName);
+                $typeGuess = null;
+                try {
+                    $typeGuess = $this->getFormTypeGuessOfProperty($documentConfig['class'], $propertyName);
+                } catch (\ErrorException $e) {
+                } catch (\Error $e) {
+                }
+
+                $requiredGuess = null;
+                try {
+                    $requiredGuess = $this->getFormRequiredGuessOfProperty($documentConfig['class'], $propertyName);
+                } catch (\ErrorException $e) {
+                } catch (\Error $e) {
+                }
 
                 $guessedType = null !== $typeGuess
                     ? FormTypeHelper::getTypeName($typeGuess->getType())
