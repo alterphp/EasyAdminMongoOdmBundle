@@ -95,15 +95,16 @@ class PropertyConfigPass implements ConfigPassInterface
                 $typeGuess = null;
                 try {
                     $typeGuess = $this->getFormTypeGuessOfProperty($documentConfig['class'], $propertyName);
-                } catch (\ErrorException $e) {
-                } catch (\Error $e) {
+                } catch (\Throwable $e) {
+                    // Dirty hack to bypass some unsuccessful guessing that thows ErrorException, Error or PHPUnitException
                 }
 
                 $requiredGuess = null;
                 try {
                     $requiredGuess = $this->getFormRequiredGuessOfProperty($documentConfig['class'], $propertyName);
-                } catch (\ErrorException $e) {
-                } catch (\Error $e) {
+                } catch (\Throwable $e) {
+                    // Dirty hack to bypass some unsuccessful guessing
+                    // that throws ErrorException, Error or PHPUnitException depending of the context
                 }
 
                 $guessedType = null !== $typeGuess
